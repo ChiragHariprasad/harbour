@@ -1038,10 +1038,13 @@
                 // Ensure form data is present and valid
                 if (!formData.get('sequence')) throw new Error('Sequence is required');
 
-                const response = await fetch('/infer', {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch(
+                  'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer',
+                  {
+                      method: 'POST',
+                      body: formData
+                  }
+              );
 
                 if (!response.ok) {
                     throw new Error(`Server error: ${response.status}`);
@@ -1066,12 +1069,14 @@
 
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results-container').innerHTML = '';
-
-            try {
-                const response = await fetch('/infer_batch', {
+          try {
+            const response = await fetch(
+                'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer_batch',
+                {
                     method: 'POST',
                     body: formData
-                });
+                }
+            );
 
                 const data = await response.json();
                 displayBatchResults(data);
