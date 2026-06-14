@@ -1025,68 +1025,123 @@
                 fileName.textContent = fileInput.files[0].name;
             }
         });
+// Single Sequence Form
+document.getElementById('single-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        // Single Sequence Form
-        document.getElementById('single-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results-container').innerHTML = '';
 
-            const formData = new FormData(e.target);
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results-container').innerHTML = '';
+    try {
 
-            try {
-                // Ensure form data is present and valid
-                if (!formData.get('sequence')) throw new Error('Sequence is required');
+        const sequence = document.getElementById('sequence').value.trim();
+        const marker = document.getElementById('marker').value.trim();
 
-                const response = await fetch(
-                  'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer',
-                  {
-                      method: 'POST',
-                      body: formData
-                  }
-              );
+        if (!sequence) {
+            throw new Error('Sequence is required');
+        }
 
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status}`);
-                }
+        if (!marker) {
+            throw new Error('Marker is required');
+        }
 
-                const result = await response.json();
-                displaySingleResult(result);
-            } catch (error) {
-                document.getElementById('results-container').innerHTML = `<div style="padding:20px; color:var(--fail-color); background:var(--fail-bg); border:1px solid var(--fail-color);">Error: ${error.message}</div>`;
-            } finally {
-                document.getElementById('loading').style.display = 'none';
+        const response = await fetch(
+            'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sequence: sequence,
+                    marker: marker
+                })
             }
-        });
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error ${response.status}: ${errorText}`);
+        }
+
+        const result = await response.json();
+        displaySingleResult(result);
+
+    } catch (error) {
+
+        document.getElementById('results-container').innerHTML = `
+            <div style="
+                padding:20px;
+                color:var(--fail-color);
+                background:var(--fail-bg);
+                border:1px solid var(--fail-color);
+            ">
+                Error: ${error.message}
+            </div>
+        `;
+
+    } finally {
+
+        document.getElementById('loading').style.display = 'none';
+
+    }
+});
 
         // Batch Form
-        document.getElementById('batch-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+document.getElementById('batch-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            const formData = new FormData();
-            formData.append('marker', document.getElementById('marker-batch').value);
-            formData.append('fasta', fileInput.files[0]);
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results-container').innerHTML = '';
 
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results-container').innerHTML = '';
-          try {
-            const response = await fetch(
-                'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer_batch',
-                {
-                    method: 'POST',
-                    body: formData
-                }
-            );
+    try {
 
-                const data = await response.json();
-                displayBatchResults(data);
-            } catch (error) {
-                alert('Error: ' + error.message);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
+        const marker = document.getElementById('marker-batch').value;
+
+        if (!fileInput.files.length) {
+            throw new Error('Please select a FASTA file');
+        }
+
+        const formData = new FormData();
+        formData.append('marker', marker);
+        formData.append('fasta', fileInput.files[0]);
+
+        const response = await fetch(
+            'https://j8vl8xz68k.execute-api.ap-south-1.amazonaws.com/infer_batch',
+            {
+                method: 'POST',
+                body: formData
             }
-        });
+        );
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        displayBatchResults(data);
+
+    } catch (error) {
+
+        document.getElementById('results-container').innerHTML = `
+            <div style="
+                padding:20px;
+                color:var(--fail-color);
+                background:var(--fail-bg);
+                border:1px solid var(--fail-color);
+            ">
+                Error: ${error.message}
+            </div>
+        `;
+
+    } finally {
+
+        document.getElementById('loading').style.display = 'none';
+
+    }
+});
         // Display Single Result
         function displaySingleResult(result) {
             const container = document.getElementById('results-container');
