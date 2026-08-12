@@ -1,0 +1,7 @@
+{
+    "model_version": "1.0.0",
+    "dbscan_eps_default": 0.3,
+    "dbscan_min_samples_default": 5,
+    "z_score_threshold": 2.0,
+    "timestamp": "20260812_234400"
+}

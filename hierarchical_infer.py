@@ -68,23 +68,30 @@ class HierarchicalPipeline:
                     
             self.indexes[rank] = (idx, ids, stats)
             
-    def predict(self, seq: str):
+    def predict(self, seq: str, use_jaccard: bool = True, use_novelty: bool = True, use_hierarchy: bool = True):
         # 1. Deterministic Stage
         t0 = time.time()
         query_k = kmerize(seq, KMER_K)
-        for rid, rk in self.reference_kmers:
-            if jaccard(query_k, rk) >= JACCARD_THRESHOLD:
-                return {
-                    "prediction": "KNOWN_EXACT",
-                    "level": "species",
-                    "matched_label": rid,
-                    "path": "deterministic",
-                    "time": time.time() - t0
-                }
+        if use_jaccard:
+            for rid, rk in self.reference_kmers:
+                if jaccard(query_k, rk) >= JACCARD_THRESHOLD:
+                    return {
+                        "prediction": "KNOWN_EXACT",
+                        "level": "species",
+                        "matched_label": rid,
+                        "path": "deterministic",
+                        "time": time.time() - t0
+                    }
                 
         # 2. Hierarchical ML Cascade
         X = encode_sequence(seq)
         
+        max_z = -999.0
+        min_conf = 1.0
+        final_label = "Unknown"
+        final_conf = 0.0
+        
+        trace = {}
         for rank in self.ranks:
             if rank not in self.models or rank not in self.indexes:
                 continue
@@ -105,25 +112,32 @@ class HierarchicalPipeline:
             mean_dist = float(np.mean(dists))
             z = (mean_dist - stats["mean"]) / stats["std"]
             
-            # Decision boundary (tuned to 1.5 for stricter novelty gating)
-            if conf < CONF_THRESHOLD or z >= 1.5:
-                return {
-                    "prediction": f"NOVEL_{rank.upper()}",
-                    "level": rank,
-                    "confidence": conf,
-                    "z_score": z,
-                    "path": "ml_cascade",
-                    "time": time.time() - t0
-                }
+            max_z = max(max_z, z)
+            min_conf = min(min_conf, conf)
+            
+            final_label = label
+            final_conf = conf
+            
+            is_novel = (conf < CONF_THRESHOLD or z >= 1.5)
+            
+            trace[rank] = {
+                "prediction": f"NOVEL_{rank.upper()}" if is_novel else label,
+                "confidence": conf,
+                "z_score": z,
+                "mean_distance": mean_dist
+            }
                 
-        # If it passes all 5 ranks without failing a novelty check, it's known at the genus level!
         return {
-            "prediction": "KNOWN_GENUS",
+            "prediction": "KNOWN_GENUS" if not (use_novelty and not use_hierarchy and max_z >= 1.5) else "NOVEL_GENUS",
             "level": "genus",
-            "matched_label": label,
-            "confidence": conf,
+            "matched_label": final_label,
+            "confidence": final_conf,
+            "max_z": max_z,
+            "min_conf": min_conf,
             "path": "ml_cascade",
-            "time": time.time() - t0
+            "time": time.time() - t0,
+            "trace": trace,
+            "_embedding": emb[0] if 'emb' in locals() else None
         }
 
 if __name__ == "__main__":

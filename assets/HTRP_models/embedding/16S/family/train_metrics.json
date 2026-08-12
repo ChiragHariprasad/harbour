@@ -19,5 +19,6 @@
       "loss": 0.03544264037029352,
       "epoch_time_s": 111.24327898025513
     }
-  ]
+  ],
+  "INVALID_FOR_FINAL_PAPER": true
 }

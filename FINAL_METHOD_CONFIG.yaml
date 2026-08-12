@@ -1,0 +1,94 @@
+# FINAL_METHOD_CONFIG.yaml
+# Phase 1: Frozen Configurations and Audit Findings
+
+# ==========================================
+# 1. MODELS AND LOSS
+# ==========================================
+primary_loss:
+  value: "supcon"
+  provenance: "Verified from assets/HTRP_models/embedding/16S/family/train_metrics.json"
+  status: "FROZEN"
+
+embedding_dimension:
+  value: 128
+  normalization: "L2 Normalized"
+  provenance: "Verified from CNNEmbedder in app.py and build_index.py"
+  status: "FROZEN"
+
+# ==========================================
+# 2. TOKENIZATION AND K-MERS
+# ==========================================
+ml_kmer:
+  value: 6
+  provenance: "app.py -> encode_sequence(k=6)"
+  status: "CONTRADICTION"
+  notes: "Documentation claims k=4. However, the inference pipeline and training pipeline explicitly use k=6. Baseline Random Forest (kmer_ml.py) uses k=4."
+
+deterministic_kmer:
+  value: 21
+  provenance: "app.py -> KMER_K = 21"
+  status: "FROZEN"
+
+deterministic_similarity:
+  value: "Asymmetric Containment"
+  formula: "len(A & B) / len(A)"
+  provenance: "app.py -> jaccard() implementation"
+  status: "CONTRADICTION"
+  notes: "Documentation calls it Jaccard (intersection over union), but code calculates intersection over length of query (containment)."
+
+# ==========================================
+# 3. THRESHOLDS (CANDIDATES FOR PHASE 6)
+# ==========================================
+z_threshold:
+  current_code_value: 2.0
+  documented_candidate: 1.5
+  provenance: "Code: app.py -> Z_NOVELTY_THRESHOLD = 2.0. Docs: 09_Full_Checklist_Report.md -> Z > 1.5"
+  status: "PENDING_PHASE_6"
+
+entropy_threshold:
+  current_code_value: null
+  documented_candidate: 2.5
+  provenance: "Not visible or implemented in app.py inference path."
+  status: "PENDING_PHASE_6"
+
+# ==========================================
+# 4. TAXONOMY AND MARKERS
+# ==========================================
+runtime_ranks:
+  value: ["family", "genus"]
+  provenance: "app.py -> RANKS"
+  status: "FROZEN"
+  
+experimentally_validated_ranks:
+  value: ["phylum", "class", "order", "family", "genus"]
+  provenance: "03_Models.md and presence of train_metrics in assets/HTRP_models/embedding/16S/"
+  status: "FROZEN"
+
+supported_markers:
+  value: ["16S", "18S", "CO1", "FITS", "PITS", "trnL", "Vert12S"]
+  provenance: "app.py -> VALID_MARKERS"
+  status: "FROZEN"
+
+experimentally_validated_markers:
+  value: ["16S"]
+  provenance: "02_Dataset.md (primarily 16S) and existence of 16S checkpoints/indexes."
+  status: "FROZEN"
+
+# ==========================================
+# 5. CLUSTERING AND INDEXING
+# ==========================================
+dbscan:
+  eps: 0.30
+  min_samples: 5
+  provenance: "app.py -> DarkTaxaClusterer(eps=0.30, min_samples=5)"
+  status: "FROZEN"
+
+faiss_index:
+  type: "IndexHNSWFlat"
+  metric: "L2 (on L2-normalized embeddings, equivalent to Cosine)"
+  dim: 128
+  M: 32
+  efConstruction: 200
+  efSearch: 64
+  provenance: "build_index.py -> faiss.IndexHNSWFlat(dim, 32)"
+  status: "FROZEN"

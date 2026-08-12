@@ -1,0 +1,342 @@
+{
+    "class_seed42": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "af1fa71e31fe6ab68f50181c62209c2941d2c762410b8ec6cf2786b3b459abd5",
+        "test_hash": "a878df86bc73aa6c0b926627c71d81e12f7226b022cfea580f16f1f37bedf13b",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46978,
+            "val_count": 6497,
+            "test_count": 5435
+        },
+        "holdout_rank": "family",
+        "seed": 42,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "class_seed43": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "efe4aeeb7b41fcaf14a44b3d8057fab413cf3421f7434da42691c64116c96e21",
+        "test_hash": "4f6f0dce96d480f34fa1c73d238b30deb095c99bb510267ec27770555a5f3366",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46855,
+            "val_count": 5982,
+            "test_count": 6073
+        },
+        "holdout_rank": "family",
+        "seed": 43,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "class_seed44": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "a87811fd4267a4426d42c1952ca89156619d9840590d2a18108baeee56f6167c",
+        "test_hash": "da126ed3ee84d82bfc71bab4db6021e8bdeaa84a20de28227a53bfe1018a7288",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 47842,
+            "val_count": 5708,
+            "test_count": 5360
+        },
+        "holdout_rank": "family",
+        "seed": 44,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "class_seed45": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "d910902a6094a02a6250a88f5cafc25b2282e28630283485d60182e482c142dd",
+        "test_hash": "1ffb5eff2f3a242adc1b5ce1685c16509c9075e916aa984df8f3487ca23b2618",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46318,
+            "val_count": 6100,
+            "test_count": 6492
+        },
+        "holdout_rank": "family",
+        "seed": 45,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "class_seed46": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "b9d59dde3066bc38e0054bd0a521c5494b514fb5838a809fb7b6483d9a60ce57",
+        "test_hash": "4af31a8e35a988e16c43fbd2284eca1931ed3ece7094a0c21a70910aa737c359",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46589,
+            "val_count": 6482,
+            "test_count": 5839
+        },
+        "holdout_rank": "family",
+        "seed": 46,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "order_seed42": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "af1fa71e31fe6ab68f50181c62209c2941d2c762410b8ec6cf2786b3b459abd5",
+        "test_hash": "a878df86bc73aa6c0b926627c71d81e12f7226b022cfea580f16f1f37bedf13b",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46978,
+            "val_count": 6497,
+            "test_count": 5435
+        },
+        "holdout_rank": "family",
+        "seed": 42,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "order_seed43": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "efe4aeeb7b41fcaf14a44b3d8057fab413cf3421f7434da42691c64116c96e21",
+        "test_hash": "4f6f0dce96d480f34fa1c73d238b30deb095c99bb510267ec27770555a5f3366",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46855,
+            "val_count": 5982,
+            "test_count": 6073
+        },
+        "holdout_rank": "family",
+        "seed": 43,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "order_seed44": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "a87811fd4267a4426d42c1952ca89156619d9840590d2a18108baeee56f6167c",
+        "test_hash": "da126ed3ee84d82bfc71bab4db6021e8bdeaa84a20de28227a53bfe1018a7288",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 47842,
+            "val_count": 5708,
+            "test_count": 5360
+        },
+        "holdout_rank": "family",
+        "seed": 44,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "order_seed45": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "d910902a6094a02a6250a88f5cafc25b2282e28630283485d60182e482c142dd",
+        "test_hash": "1ffb5eff2f3a242adc1b5ce1685c16509c9075e916aa984df8f3487ca23b2618",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46318,
+            "val_count": 6100,
+            "test_count": 6492
+        },
+        "holdout_rank": "family",
+        "seed": 45,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "order_seed46": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "b9d59dde3066bc38e0054bd0a521c5494b514fb5838a809fb7b6483d9a60ce57",
+        "test_hash": "4af31a8e35a988e16c43fbd2284eca1931ed3ece7094a0c21a70910aa737c359",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46589,
+            "val_count": 6482,
+            "test_count": 5839
+        },
+        "holdout_rank": "family",
+        "seed": 46,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "family_seed42": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "af1fa71e31fe6ab68f50181c62209c2941d2c762410b8ec6cf2786b3b459abd5",
+        "test_hash": "a878df86bc73aa6c0b926627c71d81e12f7226b022cfea580f16f1f37bedf13b",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46978,
+            "val_count": 6497,
+            "test_count": 5435
+        },
+        "holdout_rank": "family",
+        "seed": 42,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "family_seed43": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "efe4aeeb7b41fcaf14a44b3d8057fab413cf3421f7434da42691c64116c96e21",
+        "test_hash": "4f6f0dce96d480f34fa1c73d238b30deb095c99bb510267ec27770555a5f3366",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46855,
+            "val_count": 5982,
+            "test_count": 6073
+        },
+        "holdout_rank": "family",
+        "seed": 43,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "family_seed44": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "a87811fd4267a4426d42c1952ca89156619d9840590d2a18108baeee56f6167c",
+        "test_hash": "da126ed3ee84d82bfc71bab4db6021e8bdeaa84a20de28227a53bfe1018a7288",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 47842,
+            "val_count": 5708,
+            "test_count": 5360
+        },
+        "holdout_rank": "family",
+        "seed": 44,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "family_seed45": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "d910902a6094a02a6250a88f5cafc25b2282e28630283485d60182e482c142dd",
+        "test_hash": "1ffb5eff2f3a242adc1b5ce1685c16509c9075e916aa984df8f3487ca23b2618",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46318,
+            "val_count": 6100,
+            "test_count": 6492
+        },
+        "holdout_rank": "family",
+        "seed": 45,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "family_seed46": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "b9d59dde3066bc38e0054bd0a521c5494b514fb5838a809fb7b6483d9a60ce57",
+        "test_hash": "4af31a8e35a988e16c43fbd2284eca1931ed3ece7094a0c21a70910aa737c359",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46589,
+            "val_count": 6482,
+            "test_count": 5839
+        },
+        "holdout_rank": "family",
+        "seed": 46,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "genus_seed42": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "af1fa71e31fe6ab68f50181c62209c2941d2c762410b8ec6cf2786b3b459abd5",
+        "test_hash": "a878df86bc73aa6c0b926627c71d81e12f7226b022cfea580f16f1f37bedf13b",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46978,
+            "val_count": 6497,
+            "test_count": 5435
+        },
+        "holdout_rank": "family",
+        "seed": 42,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "genus_seed43": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "efe4aeeb7b41fcaf14a44b3d8057fab413cf3421f7434da42691c64116c96e21",
+        "test_hash": "4f6f0dce96d480f34fa1c73d238b30deb095c99bb510267ec27770555a5f3366",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46855,
+            "val_count": 5982,
+            "test_count": 6073
+        },
+        "holdout_rank": "family",
+        "seed": 43,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "genus_seed44": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "a87811fd4267a4426d42c1952ca89156619d9840590d2a18108baeee56f6167c",
+        "test_hash": "da126ed3ee84d82bfc71bab4db6021e8bdeaa84a20de28227a53bfe1018a7288",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 47842,
+            "val_count": 5708,
+            "test_count": 5360
+        },
+        "holdout_rank": "family",
+        "seed": 44,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "genus_seed45": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "d910902a6094a02a6250a88f5cafc25b2282e28630283485d60182e482c142dd",
+        "test_hash": "1ffb5eff2f3a242adc1b5ce1685c16509c9075e916aa984df8f3487ca23b2618",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46318,
+            "val_count": 6100,
+            "test_count": 6492
+        },
+        "holdout_rank": "family",
+        "seed": 45,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    },
+    "genus_seed46": {
+        "dataset_version": "2.0.0_strict_dedup",
+        "source_file": "E:/HTRP/assets/HTRP_cache_LEAKED_P2/16S/family/subsampled.fasta",
+        "source_hash": "2ebe968c698ad640b4ab320a5db1b3d6d9b7e152f0e2ed0dcc63a22cf2172819",
+        "train_hash": "b9d59dde3066bc38e0054bd0a521c5494b514fb5838a809fb7b6483d9a60ce57",
+        "test_hash": "4af31a8e35a988e16c43fbd2284eca1931ed3ece7094a0c21a70910aa737c359",
+        "counts": {
+            "source_count": 100000,
+            "deduplicated_count": 58910,
+            "train_count": 46589,
+            "val_count": 6482,
+            "test_count": 5839
+        },
+        "holdout_rank": "family",
+        "seed": 46,
+        "commit": "9c2755c41f86ae9c964fe6b986989493d73c4d1d"
+    }
+}

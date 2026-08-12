@@ -6,5 +6,6 @@
   "index": "HNSW32",
   "efConstruction": 200,
   "efSearch": 64,
-  "batch_size": 512
+  "batch_size": 512,
+  "INVALID_FOR_FINAL_PAPER": true
 }

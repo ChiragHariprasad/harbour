@@ -1,0 +1,541 @@
+{
+    "dataset_version": "2.0.0_strict_dedup",
+    "timestamp": "2026-08-13T01:37:31Z",
+    "ranks_audited": [
+        "class",
+        "order",
+        "family",
+        "genus"
+    ],
+    "seeds_audited": [
+        42,
+        43,
+        44,
+        45,
+        46
+    ],
+    "results": {
+        "class_seed42": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 332,
+                "99_pct_rate": 0.06108555657773689,
+                "95_pct_count": 1787,
+                "90_pct_count": 3118,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 2067,
+                    "50-70": 1402,
+                    "70-90": 1345,
+                    "90-95": 378,
+                    "95-99": 232,
+                    "99-100": 11
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46978,
+                "val_count": 6497,
+                "test_count": 5435
+            }
+        },
+        "class_seed43": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 293,
+                "99_pct_rate": 0.04824633624238432,
+                "95_pct_count": 1729,
+                "90_pct_count": 3513,
+                "max_identity": 0.9999999999972375,
+                "distribution": {
+                    "0-50": 2329,
+                    "50-70": 1788,
+                    "70-90": 1348,
+                    "90-95": 411,
+                    "95-99": 189,
+                    "99-100": 8
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46855,
+                "val_count": 5982,
+                "test_count": 6073
+            }
+        },
+        "class_seed44": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 247,
+                "99_pct_rate": 0.0460820895522388,
+                "95_pct_count": 1753,
+                "90_pct_count": 3249,
+                "max_identity": 0.9999999999958679,
+                "distribution": {
+                    "0-50": 1895,
+                    "50-70": 1501,
+                    "70-90": 1457,
+                    "90-95": 333,
+                    "95-99": 161,
+                    "99-100": 13
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 47842,
+                "val_count": 5708,
+                "test_count": 5360
+            }
+        },
+        "class_seed45": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 321,
+                "99_pct_rate": 0.04944547134935305,
+                "95_pct_count": 2256,
+                "90_pct_count": 3991,
+                "max_identity": 0.9974683544278545,
+                "distribution": {
+                    "0-50": 2262,
+                    "50-70": 1719,
+                    "70-90": 1877,
+                    "90-95": 399,
+                    "95-99": 216,
+                    "99-100": 19
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46318,
+                "val_count": 6100,
+                "test_count": 6492
+            }
+        },
+        "class_seed46": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 317,
+                "99_pct_rate": 0.05429011817091968,
+                "95_pct_count": 1992,
+                "90_pct_count": 3642,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 1960,
+                    "50-70": 1593,
+                    "70-90": 1661,
+                    "90-95": 414,
+                    "95-99": 196,
+                    "99-100": 15
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46589,
+                "val_count": 6482,
+                "test_count": 5839
+            }
+        },
+        "order_seed42": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 332,
+                "99_pct_rate": 0.06108555657773689,
+                "95_pct_count": 1787,
+                "90_pct_count": 3118,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 2067,
+                    "50-70": 1402,
+                    "70-90": 1345,
+                    "90-95": 378,
+                    "95-99": 232,
+                    "99-100": 11
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46978,
+                "val_count": 6497,
+                "test_count": 5435
+            }
+        },
+        "order_seed43": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 293,
+                "99_pct_rate": 0.04824633624238432,
+                "95_pct_count": 1729,
+                "90_pct_count": 3513,
+                "max_identity": 0.9999999999972375,
+                "distribution": {
+                    "0-50": 2329,
+                    "50-70": 1788,
+                    "70-90": 1348,
+                    "90-95": 411,
+                    "95-99": 189,
+                    "99-100": 8
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46855,
+                "val_count": 5982,
+                "test_count": 6073
+            }
+        },
+        "order_seed44": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 247,
+                "99_pct_rate": 0.0460820895522388,
+                "95_pct_count": 1753,
+                "90_pct_count": 3249,
+                "max_identity": 0.9999999999958679,
+                "distribution": {
+                    "0-50": 1895,
+                    "50-70": 1501,
+                    "70-90": 1457,
+                    "90-95": 333,
+                    "95-99": 161,
+                    "99-100": 13
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 47842,
+                "val_count": 5708,
+                "test_count": 5360
+            }
+        },
+        "order_seed45": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 321,
+                "99_pct_rate": 0.04944547134935305,
+                "95_pct_count": 2256,
+                "90_pct_count": 3991,
+                "max_identity": 0.9974683544278545,
+                "distribution": {
+                    "0-50": 2262,
+                    "50-70": 1719,
+                    "70-90": 1877,
+                    "90-95": 399,
+                    "95-99": 216,
+                    "99-100": 19
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46318,
+                "val_count": 6100,
+                "test_count": 6492
+            }
+        },
+        "order_seed46": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 317,
+                "99_pct_rate": 0.05429011817091968,
+                "95_pct_count": 1992,
+                "90_pct_count": 3642,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 1960,
+                    "50-70": 1593,
+                    "70-90": 1661,
+                    "90-95": 414,
+                    "95-99": 196,
+                    "99-100": 15
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46589,
+                "val_count": 6482,
+                "test_count": 5839
+            }
+        },
+        "family_seed42": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 332,
+                "99_pct_rate": 0.06108555657773689,
+                "95_pct_count": 1787,
+                "90_pct_count": 3118,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 2067,
+                    "50-70": 1402,
+                    "70-90": 1345,
+                    "90-95": 378,
+                    "95-99": 232,
+                    "99-100": 11
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46978,
+                "val_count": 6497,
+                "test_count": 5435
+            }
+        },
+        "family_seed43": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 293,
+                "99_pct_rate": 0.04824633624238432,
+                "95_pct_count": 1729,
+                "90_pct_count": 3513,
+                "max_identity": 0.9999999999972375,
+                "distribution": {
+                    "0-50": 2329,
+                    "50-70": 1788,
+                    "70-90": 1348,
+                    "90-95": 411,
+                    "95-99": 189,
+                    "99-100": 8
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46855,
+                "val_count": 5982,
+                "test_count": 6073
+            }
+        },
+        "family_seed44": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 247,
+                "99_pct_rate": 0.0460820895522388,
+                "95_pct_count": 1753,
+                "90_pct_count": 3249,
+                "max_identity": 0.9999999999958679,
+                "distribution": {
+                    "0-50": 1895,
+                    "50-70": 1501,
+                    "70-90": 1457,
+                    "90-95": 333,
+                    "95-99": 161,
+                    "99-100": 13
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 47842,
+                "val_count": 5708,
+                "test_count": 5360
+            }
+        },
+        "family_seed45": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 321,
+                "99_pct_rate": 0.04944547134935305,
+                "95_pct_count": 2256,
+                "90_pct_count": 3991,
+                "max_identity": 0.9974683544278545,
+                "distribution": {
+                    "0-50": 2262,
+                    "50-70": 1719,
+                    "70-90": 1877,
+                    "90-95": 399,
+                    "95-99": 216,
+                    "99-100": 19
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46318,
+                "val_count": 6100,
+                "test_count": 6492
+            }
+        },
+        "family_seed46": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 317,
+                "99_pct_rate": 0.05429011817091968,
+                "95_pct_count": 1992,
+                "90_pct_count": 3642,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 1960,
+                    "50-70": 1593,
+                    "70-90": 1661,
+                    "90-95": 414,
+                    "95-99": 196,
+                    "99-100": 15
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46589,
+                "val_count": 6482,
+                "test_count": 5839
+            }
+        },
+        "genus_seed42": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 332,
+                "99_pct_rate": 0.06108555657773689,
+                "95_pct_count": 1787,
+                "90_pct_count": 3118,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 2067,
+                    "50-70": 1402,
+                    "70-90": 1345,
+                    "90-95": 378,
+                    "95-99": 232,
+                    "99-100": 11
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46978,
+                "val_count": 6497,
+                "test_count": 5435
+            }
+        },
+        "genus_seed43": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 293,
+                "99_pct_rate": 0.04824633624238432,
+                "95_pct_count": 1729,
+                "90_pct_count": 3513,
+                "max_identity": 0.9999999999972375,
+                "distribution": {
+                    "0-50": 2329,
+                    "50-70": 1788,
+                    "70-90": 1348,
+                    "90-95": 411,
+                    "95-99": 189,
+                    "99-100": 8
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46855,
+                "val_count": 5982,
+                "test_count": 6073
+            }
+        },
+        "genus_seed44": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 247,
+                "99_pct_rate": 0.0460820895522388,
+                "95_pct_count": 1753,
+                "90_pct_count": 3249,
+                "max_identity": 0.9999999999958679,
+                "distribution": {
+                    "0-50": 1895,
+                    "50-70": 1501,
+                    "70-90": 1457,
+                    "90-95": 333,
+                    "95-99": 161,
+                    "99-100": 13
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 47842,
+                "val_count": 5708,
+                "test_count": 5360
+            }
+        },
+        "genus_seed45": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 321,
+                "99_pct_rate": 0.04944547134935305,
+                "95_pct_count": 2256,
+                "90_pct_count": 3991,
+                "max_identity": 0.9974683544278545,
+                "distribution": {
+                    "0-50": 2262,
+                    "50-70": 1719,
+                    "70-90": 1877,
+                    "90-95": 399,
+                    "95-99": 216,
+                    "99-100": 19
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46318,
+                "val_count": 6100,
+                "test_count": 6492
+            }
+        },
+        "genus_seed46": {
+            "PASS": true,
+            "errors": [],
+            "similarity": {
+                "99_pct_count": 317,
+                "99_pct_rate": 0.05429011817091968,
+                "95_pct_count": 1992,
+                "90_pct_count": 3642,
+                "max_identity": 0.9999999999974293,
+                "distribution": {
+                    "0-50": 1960,
+                    "50-70": 1593,
+                    "70-90": 1661,
+                    "90-95": 414,
+                    "95-99": 196,
+                    "99-100": 15
+                }
+            },
+            "accounting": {
+                "source_count": 100000,
+                "deduplicated_count": 58910,
+                "train_count": 46589,
+                "val_count": 6482,
+                "test_count": 5839
+            }
+        }
+    },
+    "experimental_design_verified": true,
+    "PHASE_2_STATUS": "PASS"
+}

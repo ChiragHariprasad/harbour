@@ -7,5 +7,6 @@
   "efConstruction": 200,
   "efSearch": 64,
   "mean": 0.0104,
-  "std": 0.0325
+  "std": 0.0325,
+  "INVALID_FOR_FINAL_PAPER": true
 }

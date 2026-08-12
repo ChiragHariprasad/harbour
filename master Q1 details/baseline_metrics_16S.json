@@ -1,0 +1,11 @@
+{
+  "vectorization_time_s": 5.14280104637146,
+  "training_time_s": 24.928778409957886,
+  "total_train_time_s": 30.071579456329346,
+  "evaluation": {
+    "accuracy": 0.5792,
+    "macro_avg_f1": 0.1729769215477003,
+    "weighted_avg_f1": 0.520524700720046,
+    "time_per_query_ms": 0.3101568937301636
+  }
+}

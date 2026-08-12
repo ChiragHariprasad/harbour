@@ -58,6 +58,54 @@ class ClassicalBaseline:
         
         self.is_trained = True
         
+    def predict_with_novelty(self, sequences, novelty_threshold=0.5):
+        """
+        Explicitly documented novelty/rejection mechanism for the classical baseline.
+        
+        Calculates a pseudo-novelty score based on the model's predictive uncertainty.
+        For MultinomialNB, we use: novelty_score = 1.0 - max(predict_proba)
+        
+        If the novelty_score >= novelty_threshold, the prediction is rejected and
+        flagged as NOVEL.
+        
+        Args:
+            sequences (list of str): The DNA sequences to predict.
+            novelty_threshold (float): Threshold for rejecting a prediction as NOVEL.
+            
+        Returns:
+            list of dicts containing:
+                predicted_taxon (str)
+                predicted_novel (int): 1 if rejected as novel, 0 otherwise.
+                novelty_score (float)
+        """
+        if not self.is_trained:
+            raise ValueError("Model is not trained yet!")
+            
+        X = self.vectorizer.transform(sequences)
+        
+        # MultinomialNB predict_proba outputs probability distribution over classes
+        probs = self.model.predict_proba(X)
+        max_probs = np.max(probs, axis=1)
+        best_class_indices = np.argmax(probs, axis=1)
+        
+        results = []
+        for i in range(len(sequences)):
+            novelty_score = 1.0 - max_probs[i]
+            predicted_novel = 1 if novelty_score >= novelty_threshold else 0
+            
+            if predicted_novel == 1:
+                predicted_taxon = "NOVEL"
+            else:
+                predicted_taxon = self.model.classes_[best_class_indices[i]]
+                
+            results.append({
+                "predicted_taxon": predicted_taxon,
+                "predicted_novel": predicted_novel,
+                "novelty_score": float(novelty_score)
+            })
+            
+        return results
+
     def evaluate(self, fasta_file: str):
         if not self.is_trained:
             raise ValueError("Model is not trained yet!")
@@ -74,8 +122,9 @@ class ClassicalBaseline:
                 true_labels.append(parts[-1] if len(parts) > 1 else rec.id)
                 
         t0 = time.time()
-        X = self.vectorizer.transform(sequences)
-        preds = self.model.predict(X)
+        # Predict using the new novelty mechanism (default threshold)
+        preds_info = self.predict_with_novelty(sequences, novelty_threshold=0.5)
+        preds = [p["predicted_taxon"] for p in preds_info]
         eval_time = time.time() - t0
         
         time_per_query_ms = (eval_time / len(sequences)) * 1000

@@ -5,7 +5,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 from fastapi import FastAPI, Form, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime
 import gzip
 import json
@@ -21,6 +21,8 @@ from Bio import SeqIO
 
 from src.routing import MarkerDetector
 from src.qc import sequence_qc
+from src.clustering import DarkTaxaClusterer
+from src.consensus import MultiMarkerHierarchicalConsensus
 
 
 # ========== CONFIG ==========
@@ -140,6 +142,24 @@ def encode_sequence(seq: str, k=6):
     X = torch.tensor([tokens], dtype=torch.long)
     return X.to(DEVICE)
 
+def parse_header(header: str):
+    sample_id = None
+    seq_marker = None
+    # try key=value format
+    if "sample=" in header or "marker=" in header:
+        for part in header.split():
+            if part.startswith("sample="):
+                sample_id = part.split("=")[1]
+            elif part.startswith("marker="):
+                seq_marker = part.split("=")[1]
+    # try pipe format
+    elif "|" in header:
+        parts = header.split("|")
+        if len(parts) >= 3:
+            sample_id = parts[0]
+            seq_marker = parts[1]
+    return sample_id, seq_marker
+
 def build_reference_kmers(marker: str):
     fasta = CACHE_ROOT / marker / "family" / "subsampled.fasta"
     ref = []
@@ -255,8 +275,8 @@ def infer_ml(seq: str, marker: str):
             }
         }
 
-        if prediction == "NOVEL":
-            break
+    # Store embedding internally for DBSCAN (not exposed in normal API responses)
+    results["_embedding"] = emb[0]
 
     return results
 
@@ -286,10 +306,19 @@ def run_pipeline(seq_id: str, seq: str, marker: str):
         MARKER_DETECTOR = MarkerDetector(Path("./assets/HTRP_models/routing/marker_model.pkl"))
         
     detected_marker = MARKER_DETECTOR.detect(seq)
-    # Use detected marker if the user didn't specify one or specified 'auto', 
-    # but for now we'll just log it or override if it's confident
     if marker == "auto" or marker not in VALID_MARKERS:
+        if detected_marker["confidence"] < 0.6:
+            return {
+                "run_id": run_id,
+                "query": seq_id,
+                "path": "qc",
+                "prediction": "MARKER_UNCERTAIN",
+                "timing": {"total": round(time.time() - t0, 3)}
+            }
         marker = detected_marker["label"]
+        
+    # include marker and quality score in result
+    quality_score = 1.0 if not is_corrupted else 0.0
 
     t_det = time.time()
     hit = deterministic_match(seq, marker)
@@ -299,6 +328,8 @@ def run_pipeline(seq_id: str, seq: str, marker: str):
         result = {
             "run_id": run_id,
             "query": seq_id,
+            "marker": marker,
+            "quality_score": quality_score,
             "path": "deterministic",
             "prediction": "KNOWN",
             "confidence": 1.0,
@@ -312,16 +343,19 @@ def run_pipeline(seq_id: str, seq: str, marker: str):
 
         final_prediction = "KNOWN"
         for r in ml_results.values():
-            if r["prediction"] == "NOVEL":
+            if isinstance(r, dict) and r.get("prediction") == "NOVEL":
                 final_prediction = "NOVEL"
                 break
 
         result = {
             "run_id": run_id,
             "query": seq_id,
+            "marker": marker,
+            "quality_score": quality_score,
             "path": "ml",
             "prediction": final_prediction,
             "results": ml_results,
+            "_embedding": ml_results.pop("_embedding", None),
             "timing": {"deterministic": det_time, "ml": ml_time}
         }
 
@@ -330,11 +364,12 @@ def run_pipeline(seq_id: str, seq: str, marker: str):
 
     logger.info(f"[{run_id}] DONE → {result['prediction']} ({total_time}s)")
 
-    log_history({
+    log_entry = {
         "timestamp": datetime.utcnow().isoformat(),
         "marker": marker,
-        "result": result
-    })
+        "result": {k: v for k, v in result.items() if k != "_embedding"}
+    }
+    log_history(log_entry)
 
     return result
 
@@ -387,9 +422,63 @@ async def infer_batch(marker: str = Form(...), fasta: UploadFile = File(...)):
     logger.info(f"BATCH START → {total} sequences")
 
     results = []
+    
+    # 1. Individual Inference
     for i, rec in enumerate(records, 1):
         logger.info(f"BATCH PROGRESS → {i}/{total}")
-        results.append(run_pipeline(rec.id, str(rec.seq), marker))
+        sample_id, seq_marker = parse_header(rec.description)
+        use_marker = seq_marker if (marker == "auto" and seq_marker) else marker
+        result = run_pipeline(rec.id, str(rec.seq), use_marker)
+        if sample_id:
+            result["sample_id"] = sample_id
+        results.append(result)
+
+    # 2. Novelty Clustering (DBSCAN) per marker
+    clusters = []
+    novel_candidates_by_marker = defaultdict(list)
+    
+    for r in results:
+        pred = r.get("prediction")
+        # only NOVEL paths, we also check ml_results trace if z_score is high
+        if pred == "NOVEL" and "results" in r:
+            # check the genus z_score for instance
+            genus_info = r["results"].get("genus", {})
+            z = genus_info.get("z_score", 0.0)
+            r["z_score"] = z
+            
+            if z >= Z_NOVELTY_THRESHOLD:
+                # Add it to the candidate pool
+                novel_candidates_by_marker[r["marker"]].append(r)
+                
+    for m, candidates in novel_candidates_by_marker.items():
+        if len(candidates) >= 10: # MIN_CLUSTER_POOL_SIZE
+            clusterer = DarkTaxaClusterer(eps=0.30, min_samples=5)
+            # Find the corresponding index for affinity checking
+            try:
+                idx, ids, _ = get_index(m, "genus")
+            except Exception:
+                idx, ids = None, None
+            if idx is not None:
+                cluster_res = clusterer.cluster(candidates, m, idx, ids)
+                clusters.append(cluster_res)
+                
+    # 3. Multi-Marker Consensus per sample
+    consensus_results = []
+    results_by_sample = defaultdict(list)
+    for r in results:
+        if "sample_id" in r:
+            results_by_sample[r["sample_id"]].append(r)
+            
+    consensus = MultiMarkerHierarchicalConsensus()
+    for sample_id, sample_results in results_by_sample.items():
+        # Run consensus if we have multiple sequences for this sample
+        if len(sample_results) > 1:
+            cons = consensus.resolve(sample_id, sample_results)
+            consensus_results.append(cons)
+
+    # Clean up embeddings before returning
+    for r in results:
+        r.pop("_embedding", None)
 
     return {
         "summary": {
@@ -400,6 +489,8 @@ async def infer_batch(marker: str = Form(...), fasta: UploadFile = File(...)):
             "deterministic": sum(r["path"] == "deterministic" for r in results),
             "ml_based": sum(r["path"] == "ml" for r in results)
         },
+        "clustering": clusters,
+        "consensus": consensus_results,
         "results": results
     }
 
