@@ -1,0 +1,11 @@
+{
+  "marker": "16S",
+  "rank": "phylum",
+  "num_vectors": 80000,
+  "dim": 128,
+  "index": "HNSW32",
+  "efConstruction": 200,
+  "efSearch": 64,
+  "mean": 0.0104,
+  "std": 0.0325
+}

@@ -1,0 +1,15 @@
+{
+  "marker": "16S",
+  "total_queries": 500,
+  "known_percentage": 72.39999999999999,
+  "novel_percentage": 27.6,
+  "latency_ms": 628.6699213981628,
+  "elimination_levels": {
+    "species": 286,
+    "genus": 109,
+    "family": 37,
+    "class": 23,
+    "order": 25,
+    "phylum": 20
+  }
+}

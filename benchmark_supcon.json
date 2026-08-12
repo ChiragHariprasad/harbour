@@ -1,0 +1,14 @@
+{
+  "marker": "16S",
+  "baseline": {
+    "accuracy": 0.0,
+    "macro_avg_f1": 0.0,
+    "weighted_avg_f1": 0.0,
+    "time_per_query_ms": 17.42825924158096
+  },
+  "harbour_cnn": {
+    "accuracy": 0.0,
+    "macro_f1": 0.0,
+    "time_per_query_ms": 208.25338732004164
+  }
+}

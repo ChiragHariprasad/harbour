@@ -1,0 +1,309 @@
+<USER_REQUEST>
+# HARBOUR / HTRP eDNA Pipeline — Recovery & Research Plan
+
+*Prepared from: `Backend_code_` (FastAPI service), `frontend_code` (D.E.E.P UI), the 6‑page HTRP paper draft (`DOC20260123WA0019_.pdf`), and the 35‑page MLOps tutorial report (`mlops_1.pdf`).*
+
+---
+
+## 0. TL;DR
+
+The system isn't just "undertrained" — it has structural bugs that guarantee near‑`NOVEL` predictions independent of embedding quality. Two of the three are confirmed with direct evidence (one from your own pasted output, one from a test I ran). The third is very likely given the numbers.
+
+| # | Bug | Confidence | Evidence |
+|---|-----|-----------|----------|
+| 1 | **Confidence is voted over raw accession IDs, not taxonomic labels** | Confirmed from your data | Your `/infer` response shows 10 *different* IDs in `votes`, each `count=1`, each `10.0%` → `confidence=0.1`. Since `CONF_THRESHOLD=0.6`, this can basically never pass unless the *same literal accession string* appears ≥6 times in the top‑10 — which only happens by index‑construction accident. |
+| 2 | **Non‑deterministic k‑mer tokenization** — `encode_sequence` uses Python's built‑in `hash()`, which is randomized per‑process by default | Confirmed by test | I ran the exact tokenization logic twice in separate processes: identical k‑mers received **completely different token IDs** each run (e.g. `88064` vs `34016` for the same 6‑mer set). Whatever weights the CNN embedding layer learned during training are keyed to a hash‑seed that's almost certainly lost, so at inference the model is fed effectively scrambled token indices → degenerate, near input‑independent embeddings. This is consistent with your curl output showing **all 10 neighbor distances identical at `1.4756`** — a classic signature of a collapsed/garbage embedding, not real nearest‑neighbor structure. |
+| 3 | **Novelty z‑score stats look like placeholders, not empirical values** | Strong circumstantial evidence | The code's hardcoded fallback is `{"mean": 0.9, "std": 0.05}`. The live server's `meta.json` for 16S/family returns **exactly** `mean=0.9, std=0.05`. That's a big coincidence unless nobody ever replaced the placeholder with a value computed from a real reference distance distribution. |
+
+Bug 1 alone is enough to explain "everything is NOVEL." Bug 2 explains why the *neighbors themselves* look meaningless (identical distances to unrelated accessions). Bug 3 means even a fixed embedding wouldn't have a calibrated novelty threshold. These three compound.
+
+I also found that **what's actually deployed is a stripped‑down fraction of what both documents describe** — no kingdom routing, no phylum/class classifiers, no species‑level alignment, no Shannon‑entropy neighbor consensus, and (as far as I can tell from the code you gave me) no visible training script at all — only inference. I couldn't reach `huggingface.co` from this sandbox (it's not on the allowed network list) to inspect the actual index/id files directly, so a couple of items below are flagged as "verify first."
+
+Everything below follows your six‑phase structure. Wherever there's a real fork in the road, I've marked **[DECISION]** — pick a letter and reply, or tell me to just pick the one I'd recommend.
+
+---
+
+## PHASE 1 — Evaluate Present Situation
+
+### 1.1 What's actually running vs. what's described
+
+Three sources of truth exist for this project and they disagree with each other. This matters because Phase 2 needs one target architecture, not three.
+
+| Component | Paper draft (`DOC2026...pdf`) | MLOps report (`mlops_1.pdf`) | Actual deployed code |
+|---|---|---|---|
+| Kingdom routing (k=6 sketch) | ✅ Described (§III.B.1, §III.C.2) | ❌ Not mentioned | ❌ Absent |
+| Phylum/class linear SGD classifiers | ✅ Described (§III.B.2) | ❌ Not mentioned | ❌ Absent |
+| Deterministic near‑duplicate match | Implied but not detailed | ✅ "Deterministic Similarity Evaluation" stage | ✅ Present (k=21 Jaccard-like, family only) |
+| Embedding model | CNN, **triplet loss**, **genus‑supervised** | CNN, **unsupervised instance‑level contrastive** | CNN exists (inference only); **no training code visible**, so we don't actually know which objective (if either) was used |
+| FAISS index | HNSW, family + genus | Unspecified ANN index | HNSW (per meta.json), family + genus only |
+| Novelty detection | z‑score **and** Shannon entropy of neighbor taxa | Generic "distance/density-based criteria" | z‑score only; entropy not implemented |
+| Species‑level resolution | ✅ Local alignment, 97–99% identity threshold | Not detailed | ❌ Absent entirely |
+| Marker input | Required per-query, always | Required per-query, always | Required per-query, always |
+| Corrupted vs. novel distinction | Not addressed | Not addressed | Not addressed |
+| MLOps: DVC, W&B, Cron, Docker validation | N/A | ✅ Claimed extensively (Ch. 8) | Not visible in the FastAPI code — no DVC files, no W&B calls, no cron, no startup smoke test |
+| "Results and Discussion" (Ch. 9 of the MLOps report) | — | Describes an "ANN model" doing "regression predictions" | This section reads as boilerplate/templated, not eDNA-specific — a signal that **no real evaluation has been run and written up yet**, consistent with what you're telling me |
+
+**Reading of this table:** the deployed system is closest to the *simplified 3‑stage version* the MLOps report describes (deterministic check → embedding+FAISS → statistical novelty), but even that simplified version is buggy, and it's missing the entropy consensus and any corrupted/novel distinction. The fuller paper‑draft architecture (kingdom/phylum/class/species stages) appears to be aspirational — either never built, or built and lost. I'm treating it as **not currently implemented** unless you tell me otherwise.
+
+### 1.2 Bug inventory (full list, not just the top 3)
+
+**Correctness bugs (cause wrong predictions):**
+1. Confidence voting uses raw sequence accession IDs instead of taxonomic labels (§0, bug 1).
+2. Non‑deterministic hash‑based tokenization (§0, bug 2) — breaks reproducibility *and* correctness simultaneously, and will silently re‑break every time the HF Space restarts, even after a partial fix, unless `PYTHONHASHSEED` is pinned or `hash()` is removed entirely.
+3. `kmerize()` returns a Python `set`, so `list(kmerize(...))[:MAX_SEQ_LEN]` both (a) loses sequence order — the CNN's positional convolution gets a shuffled bag of k‑mers, not the sequence — and (b) truncates to 500 k‑mers in **hash‑bucket order, not sequence order**, so for any query longer than ~500 unique 6‑mers, *which* k‑mers survive truncation is arbitrary and changes every restart.
+4. Reference novelty stats (`mean=0.9, std=0.05`) appear to be an un‑calibrated placeholder (§0, bug 3).
+5. `jaccard(a, b) = |a ∩ b| / |a|` is **not** the Jaccard index (that's `|a∩b|/|a∪b|`) — it's a query‑containment coefficient. Not necessarily wrong to use, but mislabeled, and worth re‑validating the 0.95 threshold against the correct semantics.
+6. Deterministic matching only ever checks the **family**‑level `subsampled.fasta` cache — there's no equivalent fast‑path at genus level, and no kingdom‑level fast rejection, so every non‑near‑duplicate sequence pays the full ML cost even when it's obviously the wrong kingdom (e.g., a plant sequence sent with `marker=16S`).
+7. `encode_sequence` uses **k=6** for the CNN tokenizer while the deterministic matcher uses **k=21** — not itself a bug, but if the embedding model was actually trained expecting a different k or a different vocabulary scheme than what's in this code, that's an unknown mismatch (see 1.3).
+
+**Design/engineering weaknesses (not wrong, but fragile or wasteful):**
+8. `HASH_DIM=100_000` hash buckets for what is, at k=6, only **4,096** possible distinct DNA k‑mers (4⁶). You're paying for a lossy, seed‑dependent hash into a 100k‑slot table to represent something that has an exact, collision‑free, 4,096‑entry encoding available. This is strictly worse than the alternative on every axis (correctness, size, speed, reproducibility).
+9. No training script is present anywhere in what you gave me — only inference/serving code. We need to confirm whether one exists elsewhere before deciding "fix" vs. "rebuild."
+10. No real MLOps scaffolding exists in the deployed code despite the report claiming DVC/W&B/Cron/Docker smoke tests — this is a gap between the report and reality worth closing for real, since it's literally the deliverable of the MLOps course component.
+11. `log_history` writes to a flat `analysis_history.jsonl` on local disk — on Hugging Face Spaces this is ephemeral and will vanish on every container restart/rebuild. Fine for a demo, not fine as an audit trail or as a source of retraining data.
+12. `HTTPException` messages leak the internal `VALID_MARKERS` set structure and no input validation exists on sequence content (no length cap enforcement pre‑kmerization, no ambiguous‑base handling beyond `"N" not in kmer`).
+
+### 1.3 Action items to close *before* Phase 2 starts
+
+- [ ] **Verify what `ids.npy` actually contains** per marker/rank (accession IDs vs. taxonomic names). This determines whether bug #1 is a one‑line fix (swap the vote target to a taxonomy lookup) or requires rebuilding the index metadata. I can't check this myself — `huggingface.co` isn't reachable from this sandbox. Quick script to run wherever you have HF access:
+  ```python
+  import numpy as np
+  ids = np.load("assets/HTRP_indexes/16S/family/ids.npy", allow_pickle=True)
+  print(len(ids), len(set(ids.tolist())), ids[:10])
+  ```
+  If `len(set(...))` ≈ `len(ids)`, they're basically all-unique accessions (confirms bug #1 in its worst form).
+- [ ] **Locate (or confirm the absence of) the training script(s)** for the CNN embedder, the FAISS index builder, and whatever produced `meta.json`. This single fact changes several Phase 2 decisions below.
+- [ ] **Confirm which architecture is the actual target**: the full paper‑draft pipeline, the simplified MLOps‑report pipeline, or a new one (Phase 2 proposes a 4th option). This is the biggest open decision in the whole plan.
+
+---
+
+## PHASE 2 — Fix / Repair / Redo
+
+### 2.1 Non‑negotiable fixes (needed under *any* architecture choice)
+
+These are correct regardless of which option you pick in 2.2–2.4:
+
+1. **Kill `hash()` for tokenization.** Replace with an exact k‑mer vocabulary. For k=6 that's a fixed 4,096‑entry lookup table computed as a base‑4 encoding (A=0,C=1,G=2,T=3 → integer), no hashing, no collisions, no seed dependency, deterministic forever. If you later want larger k, use a seeded, fixed, non-cryptographic hash (e.g. `hashlib.blake2b(kmer.encode(), digest_size=4)` or `mmh3.hash(kmer, seed=42)`) — never Python's built‑in `hash()` on strings.
+2. **Preserve sequence order** when building the token sequence for the CNN — iterate a sliding window left‑to‑right, don't dedupe into a `set`. If you want deduped *and* ordered, use `dict.fromkeys()` instead of `set()`.
+3. **Fix the confidence/voting logic** to aggregate taxonomic labels (family name at the family index, genus name at the genus index), not accession IDs. This requires the index's `ids.npy` (or a side‑car mapping) to carry the right label per rank.
+4. **Recompute novelty statistics empirically** — run the trained model over a held‑out reference set per marker/rank, record the real mean/std of nearest‑neighbor distances, and bake *that* into `meta.json`, not a placeholder.
+5. **Any of the above requires retraining regardless.** Even if you only fix the tokenization bug, the current checkpoint's embedding weights are tied to whatever (probably lost) hash‑seed produced them during training — there is no way to "recover" them by patching only the inference code. Budget for a full retrain, not a hot patch.
+
+### 2.2 [DECISION] Embedding backbone
+
+| Option | What it is | Pros | Cons |
+|---|---|---|---|
+| **A — Minimal repair** | Keep the current CNN(embed→conv→maxpool→fc) shape, just fix tokenization (2.1) and retrain | Fastest to ship, cheapest compute, matches "CPU‑only, sub‑50ms" claim in the paper draft | Ceiling on accuracy; still a from‑scratch model with only your reference data to learn from |
+| **B — Exact k‑mer vocab + slightly deeper CNN** | Same family of model, but proper embedding table (2.1.1) + batch norm + maybe a second conv block, as literally described in the paper draft's architecture bullet list | Still CPU‑friendly, closer to what's already written up, easy to defend in the paper as "we implemented what we said we would" | Still capped by training‑data volume/diversity for contrastive learning |
+| **C — Pretrained genomic foundation model backbone** (e.g. DNABERT‑2, HyenaDNA, Nucleotide Transformer), fine‑tuned or used as a frozen feature extractor, with a small projection head trained on your data | Highest likely accuracy ceiling; you also get a paper baseline "for free" (DNABERT is already on your required baseline list) | Breaks the "CPU‑only, sub‑50ms" story from the original paper — needs GPU for reasonable latency at scale; heavier deployment; slower iteration |
+
+**My recommendation:** **B**, with C run separately as one of the required baseline comparisons in Phase 4 rather than as the production backbone. That keeps HTRP's actual selling point (cheap, fast, CPU‑only, explainable) intact while still giving you the DNABERT/foundation‑model number the paper checklist asks for.
+
+### 2.3 [DECISION] Training objective
+
+The two source documents disagree (triplet+genus-supervised vs. unsupervised instance‑contrastive), and you separately asked to "replace the current contrastive loss with InfoNCE or SupCon" — which presupposes a contrastive loss already exists to replace. Since there's no training script to inspect, I'd resolve this by building straight from your Phase 4 requirement instead of guessing at history:
+
+| Option | Description | Notes |
+|---|---|---|
+| **A — Supervised Contrastive (SupCon)** | Use genus (or family) labels as the positive/negative signal within a contrastive framework | Satisfies "sequences from the same genus cluster together" (paper draft) **and** "contrastive learning" (your ablation checklist) in one implementation. This is what I'd default to. |
+| **B — InfoNCE, self‑supervised (augmentation-based)** | No taxonomic labels used; positives = two augmented views of the same sequence (e.g. random k-mer dropout, reverse-complement, subsequence crop) | Matches the MLOps report's "unsupervised, instance‑level" description; better for genuinely open‑set/undersampled taxa where labels are sparse or unreliable |
+| **C — Train both** | Build the harness so either loss is swappable via a flag | Directly produces the "Replace Contrastive Loss" ablation number your paper checklist needs (item 4) instead of you having to guess what "the current loss" was |
+
+**My recommendation: C.** It's barely more work than A alone if you build the training loop with a pluggable loss from day one, and it directly produces a checklist item you need anyway.
+
+### 2.4 [NEW CAPABILITY] Adaptive marker detection
+
+Right now the API requires the caller to already know the marker gene (16S/18S/CO1/etc.). You want: raw sequence in → marker inferred automatically. This isn't in either source document — it's new scope.
+
+**Why this is tractable:** different marker genes have very different k‑mer composition and length distributions (16S rRNA vs. COI protein-coding vs. ITS spacer regions look nothing alike statistically). This is a much easier classification problem than family/genus assignment.
+
+| Option | Approach | Cost |
+|---|---|---|
+| **A — Cheap classical classifier** | k‑mer frequency vector (e.g. k=4, 256‑dim, trivially fast) → logistic regression or small SVM over your 7 marker classes | Minutes to train, ~microseconds to run, easy to explain in the paper as a legitimate "kingdom/marker routing" stage consistent with the original paper's k=6 sketch idea |
+| **B — Small CNN, same architecture as the embedder** | Reuse the k‑mer tokenizer + a lightweight CNN head trained to predict marker class instead of embedding | More consistent engineering (one tokenizer, two heads), marginally more accurate, marginally more expensive |
+
+**My recommendation: A first** (build it in an afternoon, it'll likely hit >95% accuracy since marker discrimination is an easy problem), fall back to B only if A's accuracy disappoints on real mixed/ambiguous samples. Either way this becomes **Stage 0** of the pipeline, run before anything marker‑specific.
+
+### 2.5 [NEW CAPABILITY] Corrupted vs. genuinely novel
+
+Also new scope — neither document addresses this, and it's central to what you said you actually want the system to do.
+
+Proposed approach — two complementary layers:
+
+1. **Cheap deterministic QC gate (before any ML):** ambiguous‑base fraction, homopolymer run length, length bounds for the detected marker, GC content sanity range, k‑mer Shannon entropy (very low entropy ⇒ repetitive/artifact, not biology). This catches obvious garbage for free, before spending FAISS/embedding compute on it.
+2. **Learned corruption classifier:** train on real reference sequences vs. synthetically corrupted ones you generate yourself (random shuffles, random substitutions at high rate, truncated fragments, chimeric splices of two different references, homopolymer insertion). Output a `p(corrupted)` distinct from `p(novel)`.
+
+The key output‑design change this implies: **`prediction` becomes three‑way, not two‑way** — `KNOWN`, `NOVEL`, `CORRUPTED` — each with its own probability, rather than forcing corrupted input to be mislabeled as either.
+
+### 2.6 Output/API redesign
+
+To match what you described wanting ("random sequence in → matched organism, or top‑10 similar organisms, plus novelty/corruption probability"), the response shape needs to change from today's per‑rank KNOWN/NOVEL boolean into something like:
+
+```json
+{
+  "detected_marker": {"label": "16S", "confidence": 0.97},
+  "quality": {"corrupted_probability": 0.02, "flags": []},
+  "novelty": {"novel_probability": 0.81, "z_score": 2.9},
+  "top_matches": [
+    {"organism": "Vibrio harveyi", "rank_matched": "genus", "similarity": 0.88, "accession": "KX118041.1"},
+    ...
+  ],
+  "path": "deterministic | embedding | novel",
+  "explainability": { ... as today, kept and extended ... }
+}
+```
+This is a Phase 2 deliverable (schema + backend change), not just a Phase 6 writing exercise — flagging it here so it's scheduled with engineering time, not left implicit.
+
+### 2.7 Make the claimed MLOps tooling real
+
+Since the 35‑page report is a graded MLOps deliverable that currently claims DVC/W&B/Cron/Docker/smoke‑tests that don't appear in the shipped code, Phase 2 should also actually stand these up (lightweight, not enterprise‑grade):
+- DVC (or even just a documented Makefile + versioned data manifest, if DVC is overkill) for the reference FASTA/index artifacts already living in the HF dataset repo.
+- W&B (or a simpler local run‑logger if you don't want another external dependency) for every training run in 2.2/2.3.
+- A startup smoke test in the FastAPI app: on boot, run one known query per marker through the pipeline and refuse to serve traffic (or loudly log) if the result doesn't match an expected fixture — this is precisely the "startup smoke testing" the report already claims exists.
+- A scheduled (cron or GitHub Action) weekly re‑run of that same smoke test against the live Space.
+
+---
+
+## PHASE 3 — Testing, Reliability, Consistency
+
+1. **Determinism test (the one that would have caught bug #2):** run the identical query 20 times across fresh process restarts; assert identical output. Add this to CI.
+2. **Regression fixtures:** a small hand‑picked set of sequences per marker with known expected family/genus, committed to the repo; must stay `KNOWN` and correct after every retrain or deploy.
+3. **Synthetic adversarial set:** random DNA, reversed sequences, all‑N, homopolymer runs, truncated fragments — assert these land in `CORRUPTED` or `NOVEL` as appropriate, not silently in `KNOWN`.
+4. **Held‑out known‑taxa set:** sequences excluded from training but from taxa the model *has* seen elsewhere in the same family/genus — assert accuracy stays in a defined band; this is your canary for "silent accuracy degradation," a risk your own MLOps report already names.
+5. **Load/latency test:** batch of e.g. 10,000 sequences through `/infer_batch`, confirm the paper's sub‑50ms/sequence target (or your revised target if Option C in 2.2 is chosen) actually holds, on the actual deployment hardware, not just locally.
+6. **API contract tests:** frontend/backend schema agreement (this becomes more important once 2.6's response shape changes — the frontend JS will need matching updates).
+
+Exit criterion for Phase 3: the same query, run repeatedly and across restarts, gives the same answer, and that answer is *correct* on the regression fixtures. Don't start Phase 4 measurement work until this holds — otherwise your baseline numbers will be measuring noise.
+
+---
+
+## PHASE 4 — Code Implementation for the Paper's Required Numbers
+
+Mapping your 20‑item checklist into buildable components. Each row is something to *write* in Phase 4 and *run* in Phase 5.
+
+### 4.1 Baseline comparison harness (your item 1)
+
+| Baseline | Fit for eDNA taxonomic classification | Notes |
+|---|---|---|
+| BLAST | Direct fit | Standard; needs `blastn` + your reference FASTAs as a BLAST DB |
+| Kraken2 | Direct fit | k‑mer exact-match classifier; needs a built Kraken2 DB per marker |
+| Kaiju | Direct fit (protein‑level, best for COI) | |
+| DNABERT / DNABERT‑2 | Direct fit | Also doubles as your Option C backbone comparison from 2.2 |
+| DeepMicrobes | Direct fit | Designed for exactly this kind of task |
+| **DeepSEA** | **Poor fit** — designed for regulatory/chromatin‑element prediction in the human genome, not marker‑gene taxonomic classification | **[DECISION]** I'd drop this or swap it for something actually comparable — e.g. a classical k‑mer + Naive Bayes/SVM baseline (cheap, and a fairer "does deep learning even help" ablation), or a more current genomic LM like HyenaDNA. Your call — happy to keep it if a reviewer specifically expects it. |
+| MetaVW | Include if you can pin down the exact reference/implementation — "MetaVW" isn't a single canonical tool the way BLAST/Kraken2 are; worth nailing the citation before committing engineering time |
+| TaxoNN | Direct fit | Published CNN + phylogenetic-tree-informed taxonomic classifier |
+
+Build: one thin wrapper script per baseline that takes the same input FASTA/marker and produces predictions in a common schema, so all metrics (below) can be computed by one shared evaluation module rather than reimplemented per baseline.
+
+### 4.2 Open‑set evaluation protocol (item 2)
+
+- Script: stratified split generator — 90% train / 10% held‑out **species**, plus separate held‑out‑**genus** and held‑out‑**family** splits (remove all sequences of some genera/families entirely from training).
+- Metrics module: precision, recall, F1, AUROC, AUPRC, novelty recall, false‑positive rate, FPR95, open‑set accuracy, unknown‑detection precision — one shared library so every baseline and every ablation in 4.3 reports identically.
+
+### 4.3 Ablation harness (item 3)
+
+Requires each of these to be a genuine on/off flag in the pipeline (not just conceptually different code paths):
+- Jaccard/deterministic filter on/off
+- Contrastive loss on/off (or SupCon vs. InfoNCE vs. none, per 2.3)
+- Novelty detector on/off (falls back to always‑KNOWN or always‑threshold‑at‑distance)
+- Hierarchical stopping on/off (always run all ranks vs. stop at first NOVEL)
+- Uncertainty scoring on/off
+
+Output: the exact `Configuration | F1 | AUROC | Runtime` table you sketched.
+
+### 4.4 Loss replacement (item 4)
+
+Covered by 2.3 — build both losses into the training harness so this is a config swap, not a separate engineering effort.
+
+### 4.5 Embedding visualization (item 5)
+
+Standard: t‑SNE and/or UMAP over held‑out embeddings, colored by species/genus/novel‑flag/uncertainty‑band. One script, four colorings, reusable across markers.
+
+### 4.6 Phylogenetic validation (item 6)
+
+- Build/obtain a reference phylogenetic tree per marker (e.g. via a quick neighbor‑joining tree from the reference alignments, or pull one from SILVA/BOLD's own taxonomy where available).
+- Compute correlation between embedding‑space distance and tree (patristic) distance.
+- Nearest‑neighbor taxonomic purity: for each held‑out query, what fraction of its k nearest embedding neighbors share its true family/genus.
+
+### 4.7 Ecological case study (item 7)
+
+Needs one real dataset — a public marine eDNA metabarcoding dataset (e.g. from OBIS, ENA/SRA, or a published study's supplementary data) run end‑to‑end through the fixed pipeline, reporting novel‑taxa fraction, uncertain‑classification fraction, and hierarchical fallback behavior, mirroring what the paper draft already claims in §V.D.3 (deep‑sea 32–45% novel, etc.) — those numbers currently look aspirational/unverified and should be treated as **not yet substantiated** until this case study actually runs.
+
+### 4.8 Error analysis (item 8)
+
+A notebook/script that, after 4.2 runs, automatically buckets and surfaces: false negatives on novelty, false unknowns (known sequences wrongly flagged novel — directly relevant given your current bug!), taxonomic confusions (confusion matrix at family/genus level), lowest‑confidence correct vs. incorrect calls, and marker‑specific failure rates.
+
+### 4.9 Scalability benchmark (item 9) + hardware documentation (item 10)
+
+- Harness that runs 10K / 100K / 1M synthetic‑or‑subsampled query batches, recording wall‑clock and peak RSS memory, compared against BLAST and Kraken2 on identical hardware.
+- A short `HARDWARE.md`: exact CPU/GPU model, RAM, OS, and recorded index‑build and embedding‑generation throughput — feeds directly into Phase 6's reproducibility section.
+
+### 4.10 FAISS index comparison (item 11)
+
+Build the same reference embeddings into Flat, IVF, HNSW, and PQ indices; measure query latency, memory footprint, build time, and retrieval quality (recall@k against exact Flat search as ground truth).
+
+### 4.11 Calibration, OOD sensitivity, hierarchical metrics, biological features, multi‑marker generalization (items 16–20)
+
+- **Calibration:** reliability diagrams + ECE over the novelty‑probability output.
+- **OOD threshold sensitivity:** sweep the z‑score (or learned) novelty threshold, plot the resulting precision/recall/FPR curves.
+- **Hierarchical metrics:** hierarchical precision/recall and a taxonomic‑distance penalty (e.g. via the tree from 4.6).
+- **Additional biological features:** GC content, k‑mer entropy, and (optionally) simple secondary‑structure proxies as auxiliary input features or as an ablation ("with vs. without compositional features").
+- **Multi‑marker generalization:** COI, ITS, 16S already have reference data; **rbcL does not exist in your current 7 markers** — this needs a new reference database pulled and indexed (e.g. from NCBI/BOLD's plant barcode records) before this item is runnable. Flagging as a data‑acquisition dependency, not just a code task.
+
+---
+
+## PHASE 5 — Consolidate Numbers / Run Everything / Final Numbers
+
+This phase is mostly execution of Phase 4's harnesses, but a few things need to happen *in* this phase specifically rather than being assumed automatic:
+
+1. Run all baselines (4.1) and HTRP itself on the exact same held‑out splits (4.2) — same test set, same hardware, same run, to avoid the classic "we benchmarked at different times under different conditions" credibility gap.
+2. Run all five ablation configurations (4.3) back‑to‑back on the same split.
+3. Run both loss variants (4.4) and pick (or report both) for the main model.
+4. Generate all visualizations (4.5), phylogenetic numbers (4.6), the case study (4.7), and error analysis (4.8) from the *same* final trained model — not from intermediate checkpoints, to keep the paper internally consistent.
+5. Run the scalability benchmark (4.9) and FAISS comparison (4.10) — these can happen in parallel with the above since they don't depend on final model accuracy.
+6. Assemble everything into the results tables sketched in your checklist (Configuration/F1/AUROC/Runtime, etc.) plus the metric tables from 4.2.
+7. Record hardware/environment details (4.9) alongside every number — this is what makes Phase 6's reproducibility section possible rather than retrofitted.
+
+Nothing new to build here in principle — but budget real calendar time for it; running 8 baselines + 5 ablations + 2 loss variants + a scalability sweep at 3 sizes is a lot of GPU/CPU‑hours even once all the code exists.
+
+---
+
+## PHASE 6 — Draft Final Paper
+
+1. **Replace vague claims (item 12):** every instance of "highly effective," "robust," "strong" in the existing draft gets swapped for the actual number from Phase 5 (e.g. the paper draft's "z‑scores exceeding 2.6" and "18–45% novel sequence fractions" claims need to either be reproduced by the real case study in 4.7, or removed/revised).
+2. **Reproducibility section (item 13):** random seeds (including explicitly documenting that tokenization is now seed‑independent, closing the loop on bug #2), software versions, FASTA preprocessing steps, hyperparameters, exact thresholds — pull directly from 4.9's `HARDWARE.md` and the training harness's logged config.
+3. **Code release (item 14):** clean repo, README, install/training/inference instructions. Natural point to also fold in the real MLOps scaffolding from 2.7 so the public repo backs up what the MLOps report claims.
+4. **Data availability (item 15):** accession IDs, dataset sources (SILVA/PR2/BOLD/UNITE/MitoFish/GenBank, per the paper draft's own §III.A), train/test split definitions from 4.2.
+5. Final assembly and pass to align numbers across all sections (results, tables, discussion) so nothing in prose contradicts the tables — this is also where the "18–45% novel fraction" and "95.3% accuracy" style claims from the current draft either get replaced with real Phase 5 numbers or explicitly walked back.
+
+---
+
+## Decisions I need from you
+
+1. **§2.2** — Embedding backbone: **A** (minimal repair) / **B** (fixed vocab + slightly deeper CNN, my rec) / **C** (pretrained genomic foundation model as production backbone).
+2. **§2.3** — Training objective: **A** (SupCon only) / **B** (InfoNCE self‑supervised only) / **C** (build both, my rec).
+3. **§2.4** — Marker detection: **A** (classical k‑mer classifier, my rec to start) / **B** (small CNN).
+4. **§4.1** — Keep DeepSEA in the baseline list as‑is, or swap it (my suggestion: swap for a classical k‑mer+SVM/NB baseline, or a more current genomic LM)?
+5. Can you confirm whether a **training script exists anywhere** (even an old/broken one) before I assume Phase 2 is a full rebuild-from-scratch of the training pipeline?
+6. Target architecture scope for the rebuild: full paper‑draft pipeline (kingdom→phylum/class→family/genus→species) vs. the simplified 3‑stage pipeline (deterministic→embedding→novelty) plus the new marker/corruption stages from 2.4–2.5? This is the single biggest scope decision in the whole plan.
+
+start phase 1
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-08-12T16:13:25+05:30.
+
+The user's current state is as follows:
+Active Document: e:\hh-goa-2026\README.md (LANGUAGE_MARKDOWN)
+Cursor is on line: 110
+Other open documents:
+- e:\hh-goa-2026\README.md (LANGUAGE_MARKDOWN)
+- e:\hh-goa-2026\src\app\layout.tsx (LANGUAGE_TSX)
+- e:\hh-goa-2026\src\components\PassPreview.tsx (LANGUAGE_TSX)
+- e:\hh-goa-2026\src\lib\canvas\drawPass.ts (LANGUAGE_TYPESCRIPT)
+- e:\hh-goa-2026\src\app\api\fetch-profile\route.ts (LANGUAGE_TYPESCRIPT)
+No browser pages are currently open.
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from None to Claude Opus 4.6 (Thinking). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

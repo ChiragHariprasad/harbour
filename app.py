@@ -19,6 +19,9 @@ import torch
 import faiss
 from Bio import SeqIO
 
+from src.routing import MarkerDetector
+from src.qc import sequence_qc
+
 
 # ========== CONFIG ==========
 KMER_K = 21
@@ -27,7 +30,7 @@ TOP_K = 10
 CONF_THRESHOLD = 0.6
 Z_NOVELTY_THRESHOLD = 2.0
 MAX_SEQ_LEN = 500
-HASH_DIM = 100_000
+VOCAB_SIZE = 4096  # 4^6 for k=6
 
 MODEL_ROOT = Path("./assets/HTRP_models/embedding")
 INDEX_ROOT = Path("./assets/HTRP_indexes")
@@ -65,20 +68,25 @@ if not Path("./assets/HTRP_models").exists():
 MODELS = {}
 INDEXES = {}
 REFERENCE_KMERS = {}
+MARKER_DETECTOR = None
 
 
 # ========== MODEL DEFINITION ==========
 class CNNEmbedder(torch.nn.Module):
     def __init__(self, embed_dim=128, conv_channels=128):
         super().__init__()
-        self.embed = torch.nn.Embedding(HASH_DIM + 1, 64)
-        self.conv = torch.nn.Conv1d(64, conv_channels, 5, padding=2)
+        self.embed = torch.nn.Embedding(VOCAB_SIZE + 1, 64, padding_idx=VOCAB_SIZE)
+        self.conv1 = torch.nn.Conv1d(64, conv_channels, 5, padding=2)
+        self.bn1 = torch.nn.BatchNorm1d(conv_channels)
+        self.conv2 = torch.nn.Conv1d(conv_channels, conv_channels, 5, padding=2)
+        self.bn2 = torch.nn.BatchNorm1d(conv_channels)
         self.pool = torch.nn.AdaptiveMaxPool1d(1)
         self.fc = torch.nn.Linear(conv_channels, embed_dim)
 
     def forward(self, x):
         x = self.embed(x).transpose(1, 2)
-        x = torch.relu(self.conv(x))
+        x = torch.relu(self.bn1(self.conv1(x)))
+        x = torch.relu(self.bn2(self.conv2(x)))
         x = self.pool(x).squeeze(-1)
         return torch.nn.functional.normalize(self.fc(x), dim=1)
 
@@ -106,11 +114,30 @@ def jaccard(a: set, b: set) -> float:
         return 0.0
     return len(a & b) / len(a)
 
-def encode_sequence(seq: str):
-    kmers = list(kmerize(seq, 6))[:MAX_SEQ_LEN]
-    X = torch.zeros(1, len(kmers), dtype=torch.long)
-    for i, kmer in enumerate(kmers):
-        X[0, i] = hash(kmer) % HASH_DIM
+def encode_kmer(kmer: str) -> int:
+    mapping = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+    idx = 0
+    for char in kmer:
+        if char not in mapping:
+            return VOCAB_SIZE  # Map Ns or invalid chars to padding
+        idx = idx * 4 + mapping[char]
+    return idx
+
+def encode_sequence(seq: str, k=6):
+    seq = seq.upper()
+    tokens = []
+    for i in range(len(seq) - k + 1):
+        kmer = seq[i:i+k]
+        if "N" not in kmer:
+            tokens.append(encode_kmer(kmer))
+        if len(tokens) >= MAX_SEQ_LEN:
+            break
+            
+    # Pad to MAX_SEQ_LEN
+    while len(tokens) < MAX_SEQ_LEN:
+        tokens.append(VOCAB_SIZE)
+            
+    X = torch.tensor([tokens], dtype=torch.long)
     return X.to(DEVICE)
 
 def build_reference_kmers(marker: str):
@@ -236,10 +263,33 @@ def infer_ml(seq: str, marker: str):
 
 # ========== PIPELINE ENTRY ==========
 def run_pipeline(seq_id: str, seq: str, marker: str):
+    global MARKER_DETECTOR
     run_id = str(uuid.uuid4())
     t0 = time.time()
 
     logger.info(f"[{run_id}] START → {seq_id}")
+    
+    # 1. Quality Control Gate
+    is_corrupted, qc_details = sequence_qc(seq)
+    if is_corrupted:
+        return {
+            "run_id": run_id,
+            "query": seq_id,
+            "path": "qc",
+            "prediction": "CORRUPTED",
+            "details": qc_details,
+            "timing": {"total": round(time.time() - t0, 3)}
+        }
+        
+    # 2. Marker Routing / Verification
+    if MARKER_DETECTOR is None:
+        MARKER_DETECTOR = MarkerDetector(Path("./assets/HTRP_models/routing/marker_model.pkl"))
+        
+    detected_marker = MARKER_DETECTOR.detect(seq)
+    # Use detected marker if the user didn't specify one or specified 'auto', 
+    # but for now we'll just log it or override if it's confident
+    if marker == "auto" or marker not in VALID_MARKERS:
+        marker = detected_marker["label"]
 
     t_det = time.time()
     hit = deterministic_match(seq, marker)
@@ -322,14 +372,14 @@ async def root():
 
 @app.post("/infer")
 async def infer_single(sequence: str = Form(...), marker: str = Form(...)):
-    if marker not in VALID_MARKERS:
-        raise HTTPException(400, f"Invalid marker. Choose from {VALID_MARKERS}")
+    if marker != "auto" and marker not in VALID_MARKERS:
+        raise HTTPException(400, f"Invalid marker. Choose from {VALID_MARKERS} or 'auto'")
     return run_pipeline("query_sequence", sequence, marker)
 
 @app.post("/infer_batch")
 async def infer_batch(marker: str = Form(...), fasta: UploadFile = File(...)):
-    if marker not in VALID_MARKERS:
-        raise HTTPException(400, f"Invalid marker. Choose from {VALID_MARKERS}")
+    if marker != "auto" and marker not in VALID_MARKERS:
+        raise HTTPException(400, f"Invalid marker. Choose from {VALID_MARKERS} or 'auto'")
     content = await fasta.read()
     records = list(SeqIO.parse(io.StringIO(content.decode()), "fasta"))
 
@@ -346,6 +396,7 @@ async def infer_batch(marker: str = Form(...), fasta: UploadFile = File(...)):
             "total": total,
             "known": sum(r["prediction"] == "KNOWN" for r in results),
             "novel": sum(r["prediction"] == "NOVEL" for r in results),
+            "corrupted": sum(r["prediction"] == "CORRUPTED" for r in results),
             "deterministic": sum(r["path"] == "deterministic" for r in results),
             "ml_based": sum(r["path"] == "ml" for r in results)
         },

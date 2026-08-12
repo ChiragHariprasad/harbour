@@ -1,0 +1,10 @@
+{
+  "marker": "FITS",
+  "rank": "family",
+  "num_vectors": 86903,
+  "dim": 128,
+  "index": "HNSW32",
+  "efConstruction": 200,
+  "efSearch": 64,
+  "batch_size": 512
+}

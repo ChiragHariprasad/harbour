@@ -1,0 +1,10 @@
+{
+  "marker": "CO1",
+  "rank": "family",
+  "num_vectors": 100000,
+  "dim": 128,
+  "index": "HNSW32",
+  "efConstruction": 200,
+  "efSearch": 64,
+  "batch_size": 512
+}
