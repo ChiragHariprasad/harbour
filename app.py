@@ -244,7 +244,11 @@ def infer_ml(seq: str, marker: str):
 
         label, freq = Counter(hits).most_common(1)[0]
         conf = freq / TOP_K
-        mean_dist = float(np.mean(dists))
+        
+        # FIX: The index empirical stats were calculated using only the 1st neighbor distance. 
+        # Calculating the mean of TOP_K distances artificially inflates the Z-score!
+        # We must use dists[0] to compare apples to apples.
+        mean_dist = float(dists[0])
         z = (mean_dist - stats["mean"]) / stats["std"]
 
         votes = [

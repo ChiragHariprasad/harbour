@@ -1,0 +1,23 @@
+{
+  "model_type": "CNNEmbedder",
+  "loss_type": "supcon",
+  "epochs": 3,
+  "total_train_time_s": 1387.934514284134,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.08233324308684653,
+      "epoch_time_s": 442.84846568107605
+    },
+    {
+      "epoch": 2,
+      "loss": 0.06094689451790205,
+      "epoch_time_s": 476.80732893943787
+    },
+    {
+      "epoch": 3,
+      "loss": 0.04925497729778011,
+      "epoch_time_s": 468.27871966362
+    }
+  ]
+}
