@@ -1,0 +1,38 @@
+{
+    "phase": "9A",
+    "description": "Biological and Embedding Validation Protocol Freeze",
+    "frozen_parameters": {
+        "checkpoints": "E:/HTRP/assets/HTRP_models/embedding/16S/*/*/embedding.pt",
+        "embedding_configuration": {
+            "model": "SupCon",
+            "distance_metric": "cosine",
+            "l2_normalize": true
+        },
+        "taxonomic_rank_ordering": [
+            "Phylum",
+            "Class",
+            "Order",
+            "Family",
+            "Genus",
+            "Species"
+        ],
+        "D_tax_definition": "Number of hierarchical boundaries at which lineages diverge (0 to 6). 0 = exact species match, 6 = mismatch at Phylum level.",
+        "missing_taxonomy_handling": "Exclude from distance calculation at that rank. 'uncultured', 'unclassified', 'sp.', and empty/null strings do not trigger a mismatch; the sequences are considered indistinguishable at that level unless explicitly proven different.",
+        "pair_sampling_algorithm": {
+            "primary": "balanced (equal pairs across all valid D_tax levels)",
+            "secondary": "natural (sampled according to naturally occurring test-set frequency)",
+            "max_pairs_per_config": 50000
+        },
+        "random_seeds": [42, 43, 44, 45, 46],
+        "nn_purity": {
+            "k": 10,
+            "self_match_exclusion_rule": "Strictly exclude query sequence from its own neighbors. NN_k(x) \\u2286 D \\\\ {x}",
+            "reference_population": "Full Phase 6 Open-Set test pool for the specific rank/seed configuration"
+        },
+        "statistical_tests": {
+            "primary_correlation": "Spearman \\u03c1",
+            "secondary_correlation": "Pearson r",
+            "confidence_intervals": "95% bootstrap CI"
+        }
+    }
+}

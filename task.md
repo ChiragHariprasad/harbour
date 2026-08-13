@@ -91,17 +91,31 @@
   - `[x]` Save `phase7_final_metrics.csv` and generate `Phase7_FINAL_REPORT.md`
 
 ## Phase 8: Real Paired Multi-Marker Validation
-- `[ ]` Inventory datasets for $\ge 500$ real paired samples
-- `[ ]` Run conflict and missing marker tests
+- [x] BLOCKED: Required paired multi-marker metadata unavailable. Do not attempt to construct artificial 16S/CO1 pairs.
 
 ## Phase 9: Biological/Embedding Validation
-- `[ ]` Define taxonomic-distance formula
-- `[ ]` Calculate correlation and nearest-neighbor purity
-- `[ ]` Evaluate independent external dataset
+- [x] **Phase 9A: Protocol Freeze**
+    - [x] Create `phase9_freeze_manifest.json` documenting taxonomy order, missing-taxonomy logic, pair-sampling algorithms, and NN exclusion rule.
+- [x] **Phase 9B: Embedding-Taxonomy Correlation**
+    - [x] Create script for embedding vs. taxonomy distance calculation.
+    - [x] Perform Balanced pair sampling.
+    - [x] Perform Natural-distribution pair sampling (Sensitivity Analysis).
+    - [x] Output `phase9_pair_samples.csv`, `phase9_embedding_taxonomy_correlations.csv`, and `phase9_correlation_bootstrap_cis.csv`.
+- [x] **Phase 9C: k-NN Taxonomic Purity**
+    - [x] Create script to find 10-NN (strict self-match exclusion, valid reference population).
+    - [x] Compute proportion sharing Class, Order, Family, Genus.
+    - [x] Output `phase9_nn_purity_predictions.csv` (raw audit trail) and `phase9_nn_purity_summary.csv` (aggregate mean±SD).
+- [x] **Phase 9D: Baseline Comparison**
+    - [x] Run identical correlation and purity analyses for reproducible baseline representations (if applicable) and output `phase9_baseline_comparison.csv`.
+- [x] **Phase 9E: Independent Marine eDNA Case Study**
+    - [x] Zero-shot prediction and clustering on `case_study_marine.fasta`.
+    - [x] Output `phase9_marine_case_study.csv`.
+- [x] Generate final `Phase9_Biological_Embedding_Report.md`.
 
 ## Phase 10: Error Analysis
-- `[ ]` Extract False known/novel, genus/family confusion, unresolved
-- `[ ]` Select representative examples by category
+- `[ ]` Categorize False Known, False Novel, Wrong Genus, Wrong Family, Unresolved
+- `[ ]` Output table of error frequencies
+- `[ ]` Extract structured representative examples (highest conf, homonyms, etc.)
 
 ## Phase 11: Statistical Analysis
 - `[ ]` Bootstrap saved predictions ($B=1000$)
