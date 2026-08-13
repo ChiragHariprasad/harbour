@@ -76,19 +76,19 @@
   - `[x]` Calculate Mean $\pm$ SD across 5 seeds
 
 ## Phase 7: DBSCAN Robustness
-- `[ ]` 1. Phase 7A: Development (Validation Set)
-  - `[ ]` Filter candidates by frozen Phase 5 rule: $Z \ge 1.0 \lor Conf < 0.5$
-  - `[ ]` Compute empirical k-NN distance distribution for grid
-  - `[ ]` Sweep `eps` and `min_samples` on raw L2 normalized embeddings
-  - `[ ]` Apply pathological constraints ($N_{clusters} \ge 2$, Noise $< 0.3$, etc.)
-  - `[ ]` Apply lexicographic selection (Stability $\rightarrow$ Silhouette $\rightarrow$ -DB)
-  - `[ ]` Freeze `dbscan_hyperparameters.json`
-- `[ ]` 2. Phase 7B: Final Evaluation (Test Set)
-  - `[ ]` Cluster test set NOVEL candidates independently per config
-  - `[ ]` Run 100x Bootstrap Cluster Stability (intersection ARI)
-  - `[ ]` Run 1,000x Null Model Vectorized Permutation Test
-  - `[ ]` Calculate evaluation metrics (ARI, NMI, Purity)
-  - `[ ]` Output candidate accounting and stability CIs
+- `[x]` 1. Phase 7A: Development (Validation Set)
+  - `[x]` Create `phase7A_dbscan_dev.py`
+  - `[x]` Run independent grid searches (eps: 0.1-0.5, min_samples: 3-15) for all 20 combinations
+  - `[x]` Implement Lexicographic metric ranking (`Stability` -> `Silhouette` -> `-Davies-Bouldin`)
+  - `[x]` Calculate intersection stability over 30 bootstraps
+  - `[x]` Dump frozen unsupervised parameters to `dbscan_hyperparameters.json`
+- `[x]` 2. Phase 7B: Final Evaluation (Test Set)
+  - `[x]` Create `phase7B_dbscan_eval.py`
+  - `[x]` Load frozen DBSCAN parameters
+  - `[x]` Re-run NOVEL rule on Phase 6 Open-Set candidates
+  - `[x]` Compute ARI, NMI, Purity against Ground Truth taxonomy
+  - `[x]` Calculate 1,000 empirical Null-Model permutations
+  - `[x]` Save `phase7_final_metrics.csv` and generate `Phase7_FINAL_REPORT.md`
 
 ## Phase 8: Real Paired Multi-Marker Validation
 - `[ ]` Inventory datasets for $\ge 500$ real paired samples
@@ -116,4 +116,5 @@
 ## Phase 12B: Numerical-claim Provenance Audit
 - `[ ]` Trace all manuscript numerical claims
 
-## Phase 12C: Manuscr
+## Phase 12C: Manuscript Consistency Audit
+- `[ ]` Verify text descriptions match implementation
