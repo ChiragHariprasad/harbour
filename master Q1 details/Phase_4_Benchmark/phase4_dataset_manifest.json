@@ -1,0 +1,162 @@
+{
+    "class_seed46": {
+        "N_train_fit": 44589,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 1003,
+        "fit_hash": "dd3aa0d44819a584563868748f9f1e5ddfb26a8f52a9472df3460c5ad6028f0a",
+        "eval_hash": "a00fe6d886545d5ad93d9cb80c217b0ecde930ed1283693ccabe08c51fde41ef"
+    },
+    "class_seed42": {
+        "N_train_fit": 44978,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3979,
+        "N_taxa_train_eval": 1000,
+        "fit_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+        "eval_hash": "f27f58b5f37952f8bbf9a02bb9ed9599ad2aff3f8563ec24757bd7142b9784e1"
+    },
+    "order_seed43": {
+        "N_train_fit": 44855,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3978,
+        "N_taxa_train_eval": 995,
+        "fit_hash": "d6077058a6ba53dcac4961fcf9a945425b5cd9ede558176244d574a4bb046671",
+        "eval_hash": "66f078ec3acace685e0f6b7598423e51b64951474c5158408a64f0f814df2770"
+    },
+    "order_seed44": {
+        "N_train_fit": 45842,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3980,
+        "N_taxa_train_eval": 1006,
+        "fit_hash": "8243c5eb40e50bcf04549d8bd57083c4b412c236175a0522cd627a973c02dea2",
+        "eval_hash": "d61c542928918b94675f5da5c49517b195659575cca4d50348876eef85bc26b4"
+    },
+    "class_seed45": {
+        "N_train_fit": 44318,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 988,
+        "fit_hash": "3685315b01631d79e8dd4b638f60b419528a660400b490202ea9dcf0fc460f24",
+        "eval_hash": "5d8ea1bdf9a8937eeee2cdfb3f46ca7e4ba3de5fe4037d2d4e11d1de8145c996"
+    },
+    "class_seed43": {
+        "N_train_fit": 44855,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3978,
+        "N_taxa_train_eval": 995,
+        "fit_hash": "d6077058a6ba53dcac4961fcf9a945425b5cd9ede558176244d574a4bb046671",
+        "eval_hash": "66f078ec3acace685e0f6b7598423e51b64951474c5158408a64f0f814df2770"
+    },
+    "order_seed42": {
+        "N_train_fit": 44978,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3979,
+        "N_taxa_train_eval": 1000,
+        "fit_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+        "eval_hash": "f27f58b5f37952f8bbf9a02bb9ed9599ad2aff3f8563ec24757bd7142b9784e1"
+    },
+    "class_seed44": {
+        "N_train_fit": 45842,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3980,
+        "N_taxa_train_eval": 1006,
+        "fit_hash": "8243c5eb40e50bcf04549d8bd57083c4b412c236175a0522cd627a973c02dea2",
+        "eval_hash": "d61c542928918b94675f5da5c49517b195659575cca4d50348876eef85bc26b4"
+    },
+    "order_seed45": {
+        "N_train_fit": 44318,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 988,
+        "fit_hash": "3685315b01631d79e8dd4b638f60b419528a660400b490202ea9dcf0fc460f24",
+        "eval_hash": "5d8ea1bdf9a8937eeee2cdfb3f46ca7e4ba3de5fe4037d2d4e11d1de8145c996"
+    },
+    "order_seed46": {
+        "N_train_fit": 44589,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 1003,
+        "fit_hash": "dd3aa0d44819a584563868748f9f1e5ddfb26a8f52a9472df3460c5ad6028f0a",
+        "eval_hash": "a00fe6d886545d5ad93d9cb80c217b0ecde930ed1283693ccabe08c51fde41ef"
+    },
+    "family_seed45": {
+        "N_train_fit": 44318,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 988,
+        "fit_hash": "3685315b01631d79e8dd4b638f60b419528a660400b490202ea9dcf0fc460f24",
+        "eval_hash": "5d8ea1bdf9a8937eeee2cdfb3f46ca7e4ba3de5fe4037d2d4e11d1de8145c996"
+    },
+    "family_seed46": {
+        "N_train_fit": 44589,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 1003,
+        "fit_hash": "dd3aa0d44819a584563868748f9f1e5ddfb26a8f52a9472df3460c5ad6028f0a",
+        "eval_hash": "a00fe6d886545d5ad93d9cb80c217b0ecde930ed1283693ccabe08c51fde41ef"
+    },
+    "family_seed43": {
+        "N_train_fit": 44855,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3978,
+        "N_taxa_train_eval": 995,
+        "fit_hash": "d6077058a6ba53dcac4961fcf9a945425b5cd9ede558176244d574a4bb046671",
+        "eval_hash": "66f078ec3acace685e0f6b7598423e51b64951474c5158408a64f0f814df2770"
+    },
+    "family_seed42": {
+        "N_train_fit": 44978,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3979,
+        "N_taxa_train_eval": 1000,
+        "fit_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+        "eval_hash": "f27f58b5f37952f8bbf9a02bb9ed9599ad2aff3f8563ec24757bd7142b9784e1"
+    },
+    "family_seed44": {
+        "N_train_fit": 45842,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3980,
+        "N_taxa_train_eval": 1006,
+        "fit_hash": "8243c5eb40e50bcf04549d8bd57083c4b412c236175a0522cd627a973c02dea2",
+        "eval_hash": "d61c542928918b94675f5da5c49517b195659575cca4d50348876eef85bc26b4"
+    },
+    "genus_seed42": {
+        "N_train_fit": 44978,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3979,
+        "N_taxa_train_eval": 1000,
+        "fit_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+        "eval_hash": "f27f58b5f37952f8bbf9a02bb9ed9599ad2aff3f8563ec24757bd7142b9784e1"
+    },
+    "genus_seed45": {
+        "N_train_fit": 44318,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 988,
+        "fit_hash": "3685315b01631d79e8dd4b638f60b419528a660400b490202ea9dcf0fc460f24",
+        "eval_hash": "5d8ea1bdf9a8937eeee2cdfb3f46ca7e4ba3de5fe4037d2d4e11d1de8145c996"
+    },
+    "genus_seed46": {
+        "N_train_fit": 44589,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3974,
+        "N_taxa_train_eval": 1003,
+        "fit_hash": "dd3aa0d44819a584563868748f9f1e5ddfb26a8f52a9472df3460c5ad6028f0a",
+        "eval_hash": "a00fe6d886545d5ad93d9cb80c217b0ecde930ed1283693ccabe08c51fde41ef"
+    },
+    "genus_seed43": {
+        "N_train_fit": 44855,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3978,
+        "N_taxa_train_eval": 995,
+        "fit_hash": "d6077058a6ba53dcac4961fcf9a945425b5cd9ede558176244d574a4bb046671",
+        "eval_hash": "66f078ec3acace685e0f6b7598423e51b64951474c5158408a64f0f814df2770"
+    },
+    "genus_seed44": {
+        "N_train_fit": 45842,
+        "N_train_eval": 2000,
+        "N_taxa_train_fit": 3980,
+        "N_taxa_train_eval": 1006,
+        "fit_hash": "8243c5eb40e50bcf04549d8bd57083c4b412c236175a0522cd627a973c02dea2",
+        "eval_hash": "d61c542928918b94675f5da5c49517b195659575cca4d50348876eef85bc26b4"
+    }
+}

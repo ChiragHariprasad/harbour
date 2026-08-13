@@ -1,0 +1,8 @@
+{
+    "supcon_z_threshold": 1.0,
+    "supcon_confidence_threshold": 0.5,
+    "baseline_threshold": 0.99,
+    "checkpoint_id": "HARBOUR_Embedding_v1",
+    "dataset_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+    "test_used_for_selection": false
+}

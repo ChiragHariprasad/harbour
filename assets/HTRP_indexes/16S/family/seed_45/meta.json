@@ -6,6 +6,6 @@
   "index": "HNSW32",
   "efConstruction": 200,
   "efSearch": 64,
-  "mean": 0.0548,
-  "std": 0.089
+  "mean": 0.0532,
+  "std": 0.0865
 }

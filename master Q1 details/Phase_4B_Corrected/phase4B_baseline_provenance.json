@@ -1,0 +1,5 @@
+{
+    "baseline_model_class": "MultinomialNB",
+    "baseline_script": "src/baseline_corrected.py",
+    "supcon_inference_translation": "Enabled (Family -> Target Rank via Taxonomy Map)"
+}

@@ -1,0 +1,17 @@
+{
+    "method": "SupCon_FAISS",
+    "z_threshold": 1.0,
+    "confidence_threshold": 0.5,
+    "selection_metric": "mean_configuration_H_score",
+    "known_accuracy_constraint": ">= 0.8 * A_cs",
+    "validation_only": true,
+    "test_used": false,
+    "n_configurations": 20,
+    "n_bootstrap": 1000,
+    "dataset_hash": "05543cbba34a31e00004e6d3e12202ef9086a2b4b89916bb0deb7cabafcc5a2d",
+    "h_score_mean": 0.6461038485965476,
+    "h_score_95ci": [
+        0.6431484570655945,
+        0.6491634926970477
+    ]
+}

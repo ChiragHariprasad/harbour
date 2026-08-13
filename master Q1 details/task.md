@@ -31,9 +31,15 @@
 - `[x]` Execute evaluation on validation sets and save `closed_set_results.csv`, `open_set_results.csv`, `prediction_audit.csv`, `confusion_matrix.csv`
 
 ## Phase 4: Main Benchmark
-- `[/]` Run 5 taxonomic splits $\times$ 5 seeds (Running in parallel)
-- `[ ]` Evaluate Random Forest & SupCon
-- `[ ]` Calculate closed-set metrics
+- `[x]` Run 5 taxonomic splits $\times$ 5 seeds (Parallel multi-core processing complete)
+- `[x]` Evaluate Random Forest & SupCon
+- `[x]` Calculate closed-set metrics
+
+## Phase 4B: Baseline Correction & Rebenchmark
+- `[x]` Root-cause anomaly (labels forced to Family)
+- `[x]` Correct Baseline to use rank-specific target labels
+- `[x]` Translate SupCon FAISS output to target labels
+- `[x]` Re-run full 20 configurations and verify $\Delta$
 
 ## Phase 5: Threshold Development
 - `[ ]` Sweep $Z \in \{0.5, 1.0, 1.5, 2.0, 2.5, 3.0\}$ and entropy (validation only)

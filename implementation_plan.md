@@ -1,51 +1,40 @@
-# Phase 4: Main Benchmark
+# Phase 4.1: Statistical & Integrity Audit Validation Gate
 
 ## Goal Description
-Generate the primary closed-set benchmark across all 20 configurations (4 taxonomic ranks $\times$ 5 predefined seeds) using the frozen methodology.
+Conduct a rigorous integrity, leakage, and statistical audit on all Phase 4 outputs. This serves as a critical decision gate before progressing to Phase 5. We will independently verify all calculated metrics, ensure zero data leakage between splits, explain the baseline behavior, and securely organize all artifacts into structured phase directories.
 
 ## Proposed Changes
 
-### 1. Stratified Data Splitting for Closed-Set Evaluation
-We will create a script to deterministically split each configuration's `train.fasta` into `train_fit.fasta` and `train_eval.fasta` to ensure a mathematically valid closed-set evaluation.
-- **Stratification Rule**: The split will be grouped by the relevant taxonomic holdout rank. 
-- **Minimum Representation**: We will ensure that *every* taxon selected for the evaluation set is strictly a subset of the taxa present in `train_fit.fasta` (`taxa(train_eval) ⊆ taxa(train_fit)`).
-- **Sampling Strategy**: We will perform proportional deterministic stratified sampling (using `train_test_split` with `stratify=taxa`) and cap the `train_eval` size at a maximum of 2,000 sequences. If stratification yields fewer than 2,000 valid sequences, we will use the exact yielded amount.
-- **Reporting**: We will record $N_{train\_fit}$, $N_{train\_eval}$, $N_{taxa\_train\_fit}$, $N_{taxa\_train\_eval}$, and min/median/max sequences per taxon.
+### 1. `phase4_1_audit.py` Script Creation
+We will write a comprehensive Python script that executes the 11-step audit automatically:
 
-### 2. Model Retraining (Fixing the Provenance Leakage)
-As identified, the current HARBOUR checkpoint (`embedding.pt`) was trained on the pre-Phase 2 dataset. Evaluating `train_eval.fasta` against this old model would be a data leak.
-- **HARBOUR ML**: We will programmatically execute `train.py` for all 20 configurations, training strictly on the newly generated `train_fit.fasta`.
-- **Classical Baseline**: We will train the `ClassicalBaseline` exclusively on `train_fit.fasta`.
-*(Note: I inspected `src/baseline.py` and it explicitly implements a Naive Bayes classifier, not Random Forest. I will accurately refer to it as `ClassicalBaseline (MultinomialNB)` from here on out).*
+- **Results Integrity**: Use `pandas` to load `Phase4_Main_Benchmark_Results.csv` and `phase4_predictions.csv`. Verify exactly 40 config rows, no missing predictions, and no NaN/Inf values.
+- **Data Leakage & Provenance**: Load `train_fit.fasta`, `train_eval.fasta`, and FAISS indices for all 20 configs. Use `set` intersections to mathematically prove $S_{fit} \cap S_{eval} = \emptyset$ and verify taxa subsets. Cross-reference `train_metrics.json` timestamps against the `embedding.pt` modification times to verify provenance.
+- **Class Distribution**: Calculate min/median/max sequence representations for every holdout rank and save to `phase4_class_distribution.csv`.
+- **Metric Audit**: Independently recalculate Accuracy, Macro Precision/Recall/F1, Weighted F1, Balanced Accuracy, and MCC using `sklearn.metrics`. Assert the difference from the main benchmark CSV is strictly $\le 1\times 10^{-10}$. Save to `phase4_metric_recalculation.csv`.
+- **Baseline Audit**: Investigate the exact 53.44% accuracy anomaly of `MultinomialNB`. The script will verify if identical target sequences or identical label distributions are causing this plateau across ranks, and ensure it is strictly a `MultinomialNB` model being invoked.
+- **HARBOUR & Seed Variability**: Compute mean, SD, 95% CI, min, and max across the 5 seeds (unpooled) for both HARBOUR and Baseline. Save to `phase4_seed_statistics.csv`.
+- **Confusion Matrices**: Dynamically reconstruct the confusion matrices from the prediction CSV and assert equality with the saved matrices in `phase4_confusion_matrices/`.
+- **Effect Size**: Calculate paired $\Delta = \text{HARBOUR} - \text{baseline}$ and output to `phase4_effect_sizes.csv`.
+- **Audit Report**: Aggregate the final PASS/FAIL status and explanations into `phase4_audit_report.md`.
 
-### 3. FAISS Index Rebuild
-- Following the retraining of the ML models, we will rebuild all 20 FAISS indexes using `build_index.py` against `train_fit.fasta`.
-- We will verify index vector count, ID uniqueness, and ensure no evaluation sequences leak into the index.
-
-### 4. Evaluation Script & Metrics
-- We will evaluate both HARBOUR and the ClassicalBaseline using the identical `train_eval.fasta` IDs.
-- Metrics calculated: Accuracy, Macro Precision/Recall/F1, Weighted F1, Balanced Accuracy, MCC.
-- We will execute the closed-set metrics only; open-set and threshold optimization are strictly deferred to Phases 5/6.
-
-### 5. Outputs & Provenance
-We will produce the following artifacts in the output directory:
-- `phase4_predictions.csv` (Per-sequence predictions preserving experiment ID, rank, seed, true/predicted taxon, confidence, checkpoint ID/hash, config hash, and manifest hashes)
-- `Phase4_Main_Benchmark_Results.csv` (Aggregate results per model $\times$ experiment)
-- `phase4_confusion_matrices/` (Confusion matrix data for each experiment)
-- `phase4_dataset_manifest.json`
-- `phase4_validation_report.json`
+### 2. Artifact Reorganization
+Once the audit completes and passes, we will programmatically:
+- Create `e:\HTRP\master Q1 details\Phase_4_Benchmark`
+- Create `e:\HTRP\master Q1 details\Phase_4.1_Audit`
+- Move all Phase 4 artifacts (manifests, reports, CSVs, and confusion matrices) into the Phase 4 directory.
+- Move the 5 generated Phase 4.1 outputs into the Phase 4.1 directory.
+- *Note: We will implement this phase-wise folder structure convention for all future phases.*
 
 ## User Review Required
 
-> [!WARNING]
-> **Computational Runtime for Retraining**
-> Retraining the HARBOUR ML model (SupCon) from scratch across 20 configurations would sequentially take approximately **2.8 hours** in total. To drastically reduce this time as requested, I will implement a **multi-core parallel processing orchestrator** (using Python's `multiprocessing` or `concurrent.futures`) to execute the splits, model training, and FAISS indexing for multiple configurations concurrently across available CPU cores. This will execute in the background and should cut the time down to a fraction of the sequential estimate.
+> [!CAUTION]
+> **Decision Gate**
+> If `phase4_1_audit.py` fails any of the strict integrity checks (e.g. data leakage is detected, or metric discrepancies $> 10^{-10}$ exist), the script will intentionally halt with a `FAIL` status. I will stop execution, present you with the failure logs, and await your direction on how to fix the underlying issue before we touch Phase 5.
 
 ## Verification Plan
+
 ### Automated Tests
-- Verify `prediction IDs == train_eval IDs` and are unique.
-- Verify `len(y_true) == len(y_pred)`.
-- Verify no NaN/Inf confidence values.
-- Verify `taxa(train_eval) ⊆ taxa(train_fit)`.
-- Verify NO `train_eval` sequence occurs in `train_fit` or the FAISS index.
-- Verify exact checkpoint/config association.
+- Run `python phase4_1_audit.py`.
+- Verify the script prints `PASS -> proceed to Phase 5` without assertion errors.
+- Verify that `master Q1 details` contains the newly populated `Phase_4_Benchmark` and `Phase_4.1_Audit` directories with the corresponding files cleanly moved.

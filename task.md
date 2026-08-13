@@ -31,22 +31,64 @@
 - `[x]` Execute evaluation on validation sets and save `closed_set_results.csv`, `open_set_results.csv`, `prediction_audit.csv`, `confusion_matrix.csv`
 
 ## Phase 4: Main Benchmark
-- `[/]` Run 5 taxonomic splits $\times$ 5 seeds (Running in parallel)
-- `[ ]` Evaluate Random Forest & SupCon
-- `[ ]` Calculate closed-set metrics
+- `[x]` Run 5 taxonomic splits $\times$ 5 seeds (Parallel multi-core processing complete)
+- `[x]` Evaluate Random Forest & SupCon
+- `[x]` Calculate closed-set metrics
+
+## Phase 4B: Baseline Correction & Rebenchmark
+- `[x]` Root-cause anomaly (labels forced to Family)
+- `[x]` Correct Baseline to use rank-specific target labels
+- `[x]` Translate SupCon FAISS output to target labels
+- `[x]` Re-run full 20 configurations and verify $\Delta$
 
 ## Phase 5: Threshold Development
-- `[ ]` Sweep $Z \in \{0.5, 1.0, 1.5, 2.0, 2.5, 3.0\}$ and entropy (validation only)
-- `[ ]` Implement and define global entropy rule
-
-## Phase 6: Locked Open-Set Evaluation
-- `[ ]` Evaluate true open-set metrics on frozen thresholds
+- `[x]` 1. Generate Raw Novelty Scores (`phase5_generate_scores.py`)
+  - `[x]` Rigorously assert validation dataset holdout and taxonomic logic
+  - `[x]` Predict with SupCon (Z, confidence) and Baseline (max posterior)
+  - `[x]` Output `phase5_raw_scores.csv` with $\mu$ / $\sigma$ provenance
+- `[x]` 2. Threshold Sweep (`phase5_threshold_sweep.py`)
+  - `[x]` Sweep $Z \in \{0.5...4.0\}$ and $Conf \in \{0.1...1.0\}$
+  - `[x]` Sweep baseline posterior $\tau$
+  - `[x]` Calculate AUROC, AUPRC, H-score per config
+- `[x]` 3. Threshold Selection & Bootstrap
+  - `[x]` Optimize mean validation $H_{global}$ subject to $A_{os} \ge 0.8 \times A_{cs}$
+  - `[x]` Calculate 1,000 bootstrap CI for chosen threshold
+  - `[x]` Run degenerate controls
+- `[x]` 4. Freeze & Output
+  - `[x]` Save `threshold_selection.json`
+  - `[x]` Move true open-set metrics on frozen thresholds
 - `[ ]` Report per-split and pooled results
 
+## Phase 6: Final Open-Set Evaluation
+- `[x]` 1. Phase 6A: Sequential Freeze Protocol
+  - `[x]` Calculate optimal baseline threshold from Phase 5 scores
+  - `[x]` Save `baseline_threshold_selection.json`
+  - `[x]` Save `phase6_freeze_manifest.json`
+- `[x]` 2. Phase 6B: Rank-Aware Integrity Audit
+  - `[x]` Assert sequence ID holdouts ($train\_fit \cap test = \emptyset$, etc.)
+  - `[x]` Implement rank-specific taxonomic assertions (0 for Family/Genus)
+- `[x]` 3. Phase 6C: Rank-Specific Novelty Ground Truth
+  - `[x]` Calculate `true_status_at_rank`
+  - `[x]` Generate raw continuous scores for all 20 configurations
+- `[x]` 4. Phase 6D: Scientific Metrics & Composition
+  - `[x]` Output `phase6_dataset_composition.csv`
+  - `[x]` Compute 14-metric suite with 1,000 bootstrap CIs
+  - `[x]` Calculate Mean $\pm$ SD across 5 seeds
+
 ## Phase 7: DBSCAN Robustness
-- `[ ]` Collect novel candidates ($\ge 1000$ if available)
-- `[ ]` Calculate no-ground-truth metrics & stability
-- `[ ]` Calculate ground-truth metrics (if applicable)
+- `[ ]` 1. Phase 7A: Development (Validation Set)
+  - `[ ]` Filter candidates by frozen Phase 5 rule: $Z \ge 1.0 \lor Conf < 0.5$
+  - `[ ]` Compute empirical k-NN distance distribution for grid
+  - `[ ]` Sweep `eps` and `min_samples` on raw L2 normalized embeddings
+  - `[ ]` Apply pathological constraints ($N_{clusters} \ge 2$, Noise $< 0.3$, etc.)
+  - `[ ]` Apply lexicographic selection (Stability $\rightarrow$ Silhouette $\rightarrow$ -DB)
+  - `[ ]` Freeze `dbscan_hyperparameters.json`
+- `[ ]` 2. Phase 7B: Final Evaluation (Test Set)
+  - `[ ]` Cluster test set NOVEL candidates independently per config
+  - `[ ]` Run 100x Bootstrap Cluster Stability (intersection ARI)
+  - `[ ]` Run 1,000x Null Model Vectorized Permutation Test
+  - `[ ]` Calculate evaluation metrics (ARI, NMI, Purity)
+  - `[ ]` Output candidate accounting and stability CIs
 
 ## Phase 8: Real Paired Multi-Marker Validation
 - `[ ]` Inventory datasets for $\ge 500$ real paired samples
@@ -74,5 +116,4 @@
 ## Phase 12B: Numerical-claim Provenance Audit
 - `[ ]` Trace all manuscript numerical claims
 
-## Phase 12C: Manuscript Consistency Audit
-- `[ ]` Verify text descriptions match implementation
+## Phase 12C: Manuscr

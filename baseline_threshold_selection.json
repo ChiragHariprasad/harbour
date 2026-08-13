@@ -1,0 +1,8 @@
+{
+    "method": "MultinomialNB",
+    "statistic": "max_posterior_probability",
+    "threshold": 0.99,
+    "selection_dataset": "phase5_validation",
+    "selection_metric": "mean_configuration_H_score",
+    "test_used": false
+}

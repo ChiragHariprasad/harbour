@@ -1,11 +1,11 @@
 {
   "marker": "16S",
   "rank": "genus",
-  "num_vectors": 46855,
+  "num_vectors": 44855,
   "dim": 128,
   "index": "HNSW32",
   "efConstruction": 200,
   "efSearch": 64,
-  "mean": 0.0519,
-  "std": 0.0799
+  "mean": 0.0427,
+  "std": 0.0697
 }
