@@ -113,9 +113,9 @@
 - [x] Generate final `Phase9_Biological_Embedding_Report.md`.
 
 ## Phase 10: Error Analysis
-- `[ ]` Categorize False Known, False Novel, Wrong Genus, Wrong Family, Unresolved
-- `[ ]` Output table of error frequencies
-- `[ ]` Extract structured representative examples (highest conf, homonyms, etc.)
+- [x] Categorize False Known, False Novel, Wrong Genus, Wrong Family, Unresolved
+- [x] Output table of error frequencies
+- [x] Extract structured representative examples (highest conf, homonyms, etc.)
 
 ## Phase 11: Statistical Analysis
 - `[ ]` Bootstrap saved predictions ($B=1000$)
