@@ -1,11 +1,11 @@
 {
   "marker": "16S",
   "rank": "family",
-  "num_vectors": 46855,
+  "num_vectors": 44855,
   "dim": 128,
   "index": "HNSW32",
   "efConstruction": 200,
   "efSearch": 64,
-  "mean": 0.0545,
-  "std": 0.0875
+  "mean": 0.0458,
+  "std": 0.0768
 }

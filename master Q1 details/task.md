@@ -23,13 +23,15 @@
 - `[x]` Validate experimental design (5x4 seeds)
 - `[x]` Generate json/csv reports and dataset manifest
 
-## Phase 3: SupCon Evaluation Diagnosis + Fix
-- `[ ]` Trace evaluation failure path
-- `[ ]` Test independent models and scripts
-- `[ ]` Fix zero-metric issue
+## Phase 3: SupCon Evaluation Diagnosis + Redesign
+- `[x]` Implement Baseline novelty/rejection mechanism (`src/baseline.py`)
+- `[x]` Trace SupCon inference pipeline and novelty calculation
+- `[x]` Write `evaluate_pipeline.py` with separate closed/open subset processing
+- `[x]` Write unit tests for Known and Novel targets
+- `[x]` Execute evaluation on validation sets and save `closed_set_results.csv`, `open_set_results.csv`, `prediction_audit.csv`, `confusion_matrix.csv`
 
 ## Phase 4: Main Benchmark
-- `[ ]` Run 5 taxonomic splits $\times$ 5 seeds
+- `[/]` Run 5 taxonomic splits $\times$ 5 seeds (Running in parallel)
 - `[ ]` Evaluate Random Forest & SupCon
 - `[ ]` Calculate closed-set metrics
 

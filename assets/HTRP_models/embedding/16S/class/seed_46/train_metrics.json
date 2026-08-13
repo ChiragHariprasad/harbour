@@ -2,22 +2,22 @@
   "model_type": "CNNEmbedder",
   "loss_type": "supcon",
   "epochs": 3,
-  "total_train_time_s": 1375.7752211093903,
+  "total_train_time_s": 646.4509029388428,
   "history": [
     {
       "epoch": 1,
-      "loss": 0.07469080108948502,
-      "epoch_time_s": 436.8772358894348
+      "loss": 0.06917825653940311,
+      "epoch_time_s": 222.467928647995
     },
     {
       "epoch": 2,
-      "loss": 0.05868524548977489,
-      "epoch_time_s": 472.969845533371
+      "loss": 0.05595563087238055,
+      "epoch_time_s": 211.91302061080933
     },
     {
       "epoch": 3,
-      "loss": 0.04504981119897894,
-      "epoch_time_s": 465.9281396865845
+      "loss": 0.04683614696870958,
+      "epoch_time_s": 212.06995368003845
     }
   ]
 }
