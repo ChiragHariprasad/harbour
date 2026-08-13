@@ -68,17 +68,17 @@
 - `[ ]` Select representative examples by category
 
 ## Phase 11: Statistical Analysis
-- `[ ]` Bootstrap saved predictions ($B=1000$)
-- `[ ]` Calculate Descriptive statistics & 95% CIs
-- `[ ]` Calculate Comparative paired statistics
+- [x] Bootstrap saved predictions ($B=1000$)
+- [x] Calculate Descriptive statistics & 95% CIs
+- [x] Calculate Comparative paired statistics
 
 ## Phase 12: Reproducibility Package
-- `[ ]` Generate `Dockerfile`, `environment.yml`, `requirements.txt`
-- `[ ]` Generate `dataset_manifest.json`
-- `[ ]` Provide `reproduce_all.py`
+- [x] Generate `Dockerfile`, `environment.yml`, `requirements.txt`
+- [x] Generate `dataset_manifest.json`
+- [x] Provide `reproduce_all.py`
 
 ## Phase 12B: Numerical-claim Provenance Audit
-- `[ ]` Trace all manuscript numerical claims
+- [x] Trace all manuscript numerical claims
 
 ## Phase 12C: Manuscript Consistency Audit
-- `[ ]` Verify text descriptions match implementation
+- [x] Verify text descriptions match implementation

@@ -1,0 +1,15 @@
+name: harbour-eval
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pandas
+  - numpy
+  - scikit-learn
+  - faiss-cpu
+  - tqdm
+  - pytorch
+  - pip:
+    - -r requirements.txt
