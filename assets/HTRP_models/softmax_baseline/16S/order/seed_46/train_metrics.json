@@ -1,0 +1,29 @@
+{
+  "model_type": "CNNClassifier_Softmax",
+  "loss_type": "cross_entropy",
+  "rank": "order",
+  "seed": 46,
+  "epochs": 3,
+  "num_classes": 3974,
+  "total_train_time_s": 1103.3410511016846,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 4.920698587236734,
+      "train_accuracy": 0.2947198275862069,
+      "epoch_time_s": 368.37945318222046
+    },
+    {
+      "epoch": 2,
+      "loss": 2.2506817515896653,
+      "train_accuracy": 0.6011135057471264,
+      "epoch_time_s": 368.2952094078064
+    },
+    {
+      "epoch": 3,
+      "loss": 1.446282321351698,
+      "train_accuracy": 0.7063577586206896,
+      "epoch_time_s": 366.6663885116577
+    }
+  ]
+}
