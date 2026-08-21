@@ -1,0 +1,32 @@
+Loading unified DNABERT-S corpus embeddings...
+Loaded 100000 sequences of dimension 768
+
+Starting Phase 17 DNABERT-S Baseline Evaluation
+[class/42] Completed. H=0.5635 A_known=0.6900 R_novel=0.4762 tau=45.00% Time=13.8s
+[class/44] Completed. H=0.3997 A_known=0.6803 R_novel=0.2830 tau=30.00% Time=15.0s
+[class/45] Completed. H=0.3192 A_known=0.7334 R_novel=0.2040 tau=30.00% Time=15.7s
+[class/43] Completed. H=0.5195 A_known=0.6899 R_novel=0.4167 tau=45.00% Time=15.9s
+[class/46] Completed. H=0.3059 A_known=0.7402 R_novel=0.1928 tau=30.00% Time=6.5s
+[order/42] Completed. H=0.0000 A_known=0.5074 R_novel=0.0000 tau=0.00% Time=11.6s
+[order/44] Completed. H=0.0000 A_known=0.4834 R_novel=0.0000 tau=0.00% Time=17.0s
+[order/43] Completed. H=0.0000 A_known=0.5034 R_novel=0.0000 tau=0.00% Time=18.7s
+[order/45] Completed. H=0.0000 A_known=0.4915 R_novel=0.0000 tau=0.00% Time=18.1s
+[order/46] Completed. H=0.0000 A_known=0.5066 R_novel=0.0000 tau=0.00% Time=12.0s
+[family/42] Completed. H=0.5330 A_known=0.5550 R_novel=0.5126 tau=30.00% Time=10.0s
+[family/43] Completed. H=0.5414 A_known=0.5480 R_novel=0.5350 tau=30.00% Time=13.1s
+[family/44] Completed. H=0.5450 A_known=0.5480 R_novel=0.5420 tau=30.00% Time=13.8s
+[family/45] Completed. H=0.5336 A_known=0.5635 R_novel=0.5066 tau=30.00% Time=16.9s
+[family/46] Completed. H=0.5272 A_known=0.5600 R_novel=0.4980 tau=30.00% Time=17.4s
+[genus/42] Completed. H=0.4437 A_known=0.3822 R_novel=0.5289 tau=25.00% Time=12.9s
+[genus/43] Completed. H=0.4649 A_known=0.4049 R_novel=0.5457 tau=25.00% Time=10.7s
+[genus/44] Completed. H=0.4514 A_known=0.3933 R_novel=0.5296 tau=25.00% Time=10.0s
+[genus/45] Completed. H=0.4313 A_known=0.3851 R_novel=0.4901 tau=25.00% Time=10.7s
+[genus/46] Completed. H=0.4390 A_known=0.3899 R_novel=0.5022 tau=25.00% Time=10.5s
+
+Full evaluation completed in 71.17s
+
+Aggregated Results:
+class      H=0.4216+-0.1163 A_known=0.7068 R_novel=0.3145
+order      H=0.0000+-0.0000 A_known=0.4985 R_novel=0.0000
+family     H=0.5360+-0.0071 A_known=0.5549 R_novel=0.5188
+genus      H=0.4461+-0.0128 A_known=0.3911 R_novel=0.5193

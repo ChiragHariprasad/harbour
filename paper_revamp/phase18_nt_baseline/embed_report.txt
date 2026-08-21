@@ -1,0 +1,4 @@
+Total Time: 22672.39s
+Batch Size: 32
+Device: cpu
+Model: InstaDeepAI/nucleotide-transformer-500m-human-ref

@@ -1,0 +1,32 @@
+Loading unified Nucleotide Transformer corpus embeddings...
+Loaded 100000 sequences of dimension 1280
+
+Starting Phase 18 Nucleotide Transformer Baseline Evaluation
+[class/42] Completed. H=0.4045 A_known=0.6630 R_novel=0.2910 tau=30.00% Time=26.5s
+[class/45] Completed. H=0.1307 A_known=0.7077 R_novel=0.0720 tau=25.00% Time=28.6s
+[class/43] Completed. H=0.5622 A_known=0.6422 R_novel=0.5000 tau=45.00% Time=31.5s
+[class/44] Completed. H=0.3558 A_known=0.6476 R_novel=0.2453 tau=30.00% Time=31.5s
+[class/46] Completed. H=0.1695 A_known=0.7019 R_novel=0.0964 tau=25.00% Time=21.5s
+[order/42] Completed. H=0.0000 A_known=0.4929 R_novel=0.0000 tau=0.00% Time=27.6s
+[order/43] Completed. H=0.0000 A_known=0.4910 R_novel=0.0000 tau=0.00% Time=33.9s
+[order/44] Completed. H=0.0000 A_known=0.4825 R_novel=0.0000 tau=0.00% Time=36.1s
+[order/45] Completed. H=0.0000 A_known=0.4787 R_novel=0.0000 tau=0.00% Time=33.1s
+[order/46] Completed. H=0.0000 A_known=0.4748 R_novel=0.0000 tau=0.00% Time=32.6s
+[family/42] Completed. H=0.5498 A_known=0.5340 R_novel=0.5665 tau=30.00% Time=32.2s
+[family/43] Completed. H=0.5479 A_known=0.5250 R_novel=0.5729 tau=30.00% Time=34.1s
+[family/44] Completed. H=0.5589 A_known=0.5310 R_novel=0.5899 tau=30.00% Time=34.1s
+[family/45] Completed. H=0.5505 A_known=0.5435 R_novel=0.5578 tau=30.00% Time=33.1s
+[family/46] Completed. H=0.5464 A_known=0.5370 R_novel=0.5561 tau=30.00% Time=34.1s
+[genus/42] Completed. H=0.4495 A_known=0.3770 R_novel=0.5565 tau=25.00% Time=40.6s
+[genus/43] Completed. H=0.4516 A_known=0.3735 R_novel=0.5711 tau=25.00% Time=32.3s
+[genus/44] Completed. H=0.4682 A_known=0.3964 R_novel=0.5718 tau=25.00% Time=27.2s
+[genus/45] Completed. H=0.4497 A_known=0.3817 R_novel=0.5471 tau=25.00% Time=21.0s
+[genus/46] Completed. H=0.4624 A_known=0.3941 R_novel=0.5595 tau=25.00% Time=12.8s
+
+Full evaluation completed in 155.36s
+
+Aggregated Results:
+class      H=0.3245+-0.1771 A_known=0.6725 R_novel=0.2409
+order      H=0.0000+-0.0000 A_known=0.4840 R_novel=0.0000
+family     H=0.5507+-0.0049 A_known=0.5341 R_novel=0.5686
+genus      H=0.4563+-0.0085 A_known=0.3845 R_novel=0.5612

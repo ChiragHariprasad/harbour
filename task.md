@@ -66,12 +66,18 @@
   - `[x]` Save `phase6_freeze_manifest.json`
 - `[x]` 2. Phase 6B: Rank-Aware Integrity Audit
   - `[x]` Assert sequence ID holdouts ($train\_fit \cap test = \emptyset$, etc.)
-  - `[x]` Implement rank-specific taxonomic assertions (0 for Family/Genus)
-- `[x]` 3. Phase 6C: Rank-Specific Novelty Ground Truth
-  - `[x]` Calculate `true_status_at_rank`
-  - `[x]` Generate raw continuous scores for all 20 configurations
-- `[x]` 4. Phase 6D: Scientific Metrics & Composition
-  - `[x]` Output `phase6_dataset_composition.csv`
+  - `[x]` **Phase 15 (VSEARCH Baseline)**: Implement and execute global alignment baseline.
+- `[/]` **Phase 16 (Kraken2 Baseline)**: 
+  - `[x]` Compile Kraken2 in WSL and run Stage A constraint verification.
+  - `[/]` Execute Kraken2 database builds and classification sweeps (Stage B/C) across 19 configurations. (Running as background task)
+- `[/]` **Phase 17 (DNABERT-S Baseline)**: 
+  - `[x]` Install required packages and prepare WSL pipeline for GPU-less execution.
+  - `[/]` Extract ~59k frozen DNABERT-S embeddings and cache. (Paused to allow Kraken2 to finish)
+  - `[ ]` Execute FAISS indexing and novelty detection pipeline across 20 configurations.
+- `[ ]` **Phase 18 (Nucleotide Transformer Baseline)**: 
+  - `[ ]` Determine model size and write embedding extraction script.
+  - `[ ]` Extract ~59k frozen Nucleotide Transformer embeddings and cache.
+  - `[ ]` Execute FAISS indexing and novelty detection pipeline across 20 configurations.6_dataset_composition.csv`
   - `[x]` Compute 14-metric suite with 1,000 bootstrap CIs
   - `[x]` Calculate Mean $\pm$ SD across 5 seeds
 
@@ -132,3 +138,11 @@
 
 ## Phase 12C: Manuscript Consistency Audit
 - [x] Verify text descriptions match implementation
+
+## Phase 21: Final Consolidation
+- `[ ]` Wait for Phase 16, 17, and 18 completion
+- `[ ]` Compile 4-way Ablation Table (All 4 ranks)
+- `[ ]` Run Sequence-level Bootstrap (B=1000) for all baselines
+- `[ ]` Compile Baseline Comparison Table (All 4 ranks)
+- `[ ]` Generate Findings Summary Report
+- `[ ]` Verify reproducibility structure and hashes

@@ -1,0 +1,3 @@
+Total Time: 6914.61s
+Batch Size: 32
+Device: cpu
